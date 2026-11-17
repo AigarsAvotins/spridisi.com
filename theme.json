@@ -1,0 +1,28 @@
+{
+	"$schema": "https://schemas.wp.org/wp/6.6/theme.json",
+	"version": 3,
+	"settings": {
+		"layout": {
+			"contentSize": "48rem",
+			"wideSize": "80rem"
+		},
+		"color": {
+			"defaultPalette": false,
+			"palette": [
+				{ "slug": "forest", "name": "Forest Green", "color": "#18352B" },
+				{ "slug": "deep-green", "name": "Deep Green", "color": "#102820" },
+				{ "slug": "sand", "name": "Warm Sand", "color": "#D2B48C" },
+				{ "slug": "off-white", "name": "Warm Off-white", "color": "#F7F3EB" },
+				{ "slug": "stone", "name": "Muted Stone", "color": "#D9D4C8" },
+				{ "slug": "copper", "name": "Copper", "color": "#A66A43" },
+				{ "slug": "ink", "name": "Dark Text", "color": "#202520" }
+			]
+		},
+		"typography": {
+			"fontFamilies": [
+				{ "slug": "editorial", "name": "Contemporary Serif", "fontFamily": "Georgia, 'Times New Roman', serif" },
+				{ "slug": "sans", "name": "Humanist Sans", "fontFamily": "Aptos, Segoe UI, Helvetica Neue, sans-serif" }
+			]
+		}
+	}
+}
