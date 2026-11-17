@@ -38,7 +38,7 @@ function spridisi_block_has_class( $block, $class ) {
 	return in_array( $class, explode( ' ', $block['attrs']['className'] ?? '' ), true );
 }
 
-function spridisi_homepage_field( $section, $field ) {
+function spridisi_homepage_group( $section ) {
 	$sections = spridisi_homepage_sections();
 	$path     = explode( '/', $section );
 	$group    = $sections[ array_shift( $path ) ] ?? null;
@@ -52,6 +52,11 @@ function spridisi_homepage_field( $section, $field ) {
 		}
 		$group = $found;
 	}
+	return $group;
+}
+
+function spridisi_homepage_field( $section, $field ) {
+	$group = spridisi_homepage_group( $section );
 	if ( null === $group ) {
 		return null;
 	}
@@ -123,11 +128,44 @@ function spridisi_homepage_body( $section, $field = 'body' ) {
 
 function spridisi_homepage_body_markup( $section, $field = 'body' ) {
 	$block = spridisi_homepage_field( $section, $field );
-	if ( null === $block ) {
-		return '';
+	$blocks = array();
+	if ( 'body' === $field && 'hero' !== $section ) {
+		$group = spridisi_homepage_group( $section );
+		foreach ( $group['innerBlocks'] ?? array() as $child ) {
+			if ( spridisi_block_has_class( $child, 'spridisi-field-body' ) ) {
+				$blocks = array_merge( $blocks, 'core/group' === $child['blockName'] ? $child['innerBlocks'] : array( $child ) );
+				continue;
+			}
+			$classes = $child['attrs']['className'] ?? '';
+			$is_field = preg_match( '/(?:^|\s)spridisi-(?:field|item)-/', $classes );
+			if ( ( ! $is_field || spridisi_block_has_class( $child, 'spridisi-field-text' ) ) && in_array( $child['blockName'], array( 'core/paragraph', 'core/group', 'core/list', 'core/quote', 'core/verse', 'core/freeform' ), true ) ) {
+				$blocks[] = $child;
+			}
+		}
+	} elseif ( null !== $block ) {
+		$blocks = 'core/group' === $block['blockName'] ? $block['innerBlocks'] : array( $block );
 	}
-	$html = 'core/group' === $block['blockName'] ? implode( '', array_map( 'render_block', $block['innerBlocks'] ) ) : render_block( $block );
+	$html = '';
+	foreach ( $blocks as $body_block ) {
+		$html .= render_block( spridisi_homepage_public_body_block( $body_block ) );
+	}
 	return '' !== trim( wp_strip_all_tags( $html ) ) ? wp_kses_post( $html ) : '';
+}
+
+function spridisi_homepage_public_body_block( $block ) {
+	$text = trim( html_entity_decode( wp_strip_all_tags( $block['innerHTML'] ?? '' ), ENT_QUOTES, get_bloginfo( 'charset' ) ) );
+	$instructions = array(
+		'Add verified content here. Empty text is not displayed on the homepage.',
+		__( 'Add verified content here. Empty text is not displayed on the homepage.', 'spridisi' ),
+	);
+	$is_empty_helper = '' === $text && ( spridisi_block_has_class( $block, 'spridisi-field-text' ) || isset( $block['attrs']['placeholder'] ) );
+	if ( empty( $block['innerBlocks'] ) && ( $is_empty_helper || in_array( $text, $instructions, true ) ) ) {
+		return array( 'blockName' => null, 'attrs' => array(), 'innerBlocks' => array(), 'innerHTML' => '', 'innerContent' => array( '' ) );
+	}
+	foreach ( $block['innerBlocks'] ?? array() as $index => $child ) {
+		$block['innerBlocks'][ $index ] = spridisi_homepage_public_body_block( $child );
+	}
+	return $block;
 }
 
 function spridisi_homepage_photo( $section, $class = 'editorial-photo', $size = 'large', $decorative = false ) {
