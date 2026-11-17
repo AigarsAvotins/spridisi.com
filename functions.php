@@ -42,20 +42,24 @@ function spridisi_setup() {
 add_action( 'after_setup_theme', 'spridisi_setup' );
 
 function spridisi_enqueue_assets() {
-	$theme_version = wp_get_theme()->get( 'Version' );
+	$theme_version  = wp_get_theme()->get( 'Version' );
+	$style_path     = get_theme_file_path( '/assets/css/main.css' );
+	$script_path    = get_theme_file_path( '/assets/js/main.js' );
+	$style_version  = is_file( $style_path ) ? (string) filemtime( $style_path ) : $theme_version;
+	$script_version = is_file( $script_path ) ? (string) filemtime( $script_path ) : $theme_version;
 
 	wp_enqueue_style(
 		'spridisi-main',
-		get_theme_file_uri( '/assets/css/main.css' ),
+		esc_url( get_theme_file_uri( '/assets/css/main.css' ) ),
 		array(),
-		$theme_version
+		$style_version
 	);
 
 	wp_enqueue_script(
 		'spridisi-main',
-		get_theme_file_uri( '/assets/js/main.js' ),
+		esc_url( get_theme_file_uri( '/assets/js/main.js' ) ),
 		array(),
-		$theme_version,
+		$script_version,
 		array(
 			'strategy'  => 'defer',
 			'in_footer' => true,

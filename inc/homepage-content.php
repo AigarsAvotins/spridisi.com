@@ -99,9 +99,18 @@ function spridisi_homepage_image( $section ) {
 	if ( ! $processor->next_tag( 'IMG' ) ) {
 		return array();
 	}
+	$url  = esc_url_raw( $processor->get_attribute( 'src' ) ?? '' );
+	$path = wp_parse_url( $url, PHP_URL_PATH );
+	foreach ( array( 'hero-spridisi.jpg', 'venue-spridisi.jpg', 'sauna-spridisi.jpg' ) as $filename ) {
+		$asset_path = '/assets/images/' . $filename;
+		if ( is_string( $path ) && str_ends_with( $path, $asset_path ) && ! absint( $block['attrs']['id'] ?? 0 ) ) {
+			$url = get_theme_file_uri( $asset_path );
+			break;
+		}
+	}
 	return array(
 		'id'     => absint( $block['attrs']['id'] ?? 0 ),
-		'url'    => esc_url_raw( $processor->get_attribute( 'src' ) ?? '' ),
+		'url'    => esc_url_raw( $url ),
 		'alt'    => sanitize_text_field( $processor->get_attribute( 'alt' ) ?? '' ),
 		'width'  => absint( $processor->get_attribute( 'width' ) ?? 0 ),
 		'height' => absint( $processor->get_attribute( 'height' ) ?? 0 ),
