@@ -255,8 +255,12 @@ h3 { font-size: 1.75rem; }
 @media (prefers-reduced-motion: no-preference) {
 	.is-revealed { animation: reveal 650ms ease-out both; }
 	@keyframes reveal { from { opacity: 0.35; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-	.hero__image { transform-origin: 50% 50%; animation: hero-image-in 5s cubic-bezier(0.4, 0.05, 0.6, 0.95) both; }
-	@keyframes hero-image-in { from { opacity: 0.6; transform: translate(-4%, 2%) scale(1.28); } to { opacity: 1; transform: translate(2%, 0) scale(1.03); } }
+	.hero__image { transform-origin: 50% 50%; animation: hero-image-in 14s linear infinite alternate; }
+	@keyframes hero-image-in {
+		0% { transform: translate(-4%, 2%) scale(1.4); }
+		50% { transform: translate(2%, 0) scale(1.03); }
+		100% { transform: translate(4%, -2%) scale(1.4); }
+	}
 }
 
 @media (prefers-reduced-motion: reduce) {
