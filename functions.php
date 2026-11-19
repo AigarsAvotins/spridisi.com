@@ -69,6 +69,8 @@ function spridisi_enqueue_assets() {
 add_action( 'wp_enqueue_scripts', 'spridisi_enqueue_assets' );
 
 require_once get_theme_file_path( '/inc/homepage-content.php' );
+require_once get_theme_file_path( '/inc/gallery.php' );
+require_once get_theme_file_path( '/inc/booking.php' );
 
 function spridisi_customize_register( $wp_customize ) {
 	$wp_customize->add_section( 'spridisi_homepage', array( 'title' => __( 'Sprīdīši: homepage', 'spridisi' ), 'priority' => 30 ) );
@@ -121,6 +123,9 @@ function spridisi_default_menu() {
 	);
 	echo '<ul class="menu">';
 	foreach ( $items as $anchor => $label ) {
+		if ( 'stasts' === $anchor && spridisi_gallery_url() ) {
+			echo '<li><a href="' . esc_url( spridisi_gallery_url() ) . '">' . esc_html__( 'Galerija', 'spridisi' ) . '</a></li>';
+		}
 		echo '<li><a href="' . esc_url( spridisi_home_anchor( $anchor ) ) . '">' . esc_html( $label ) . '</a></li>';
 	}
 	echo '</ul>';
@@ -158,11 +163,11 @@ function spridisi_photo( $key, $size = 'large', $page = null ) {
 
 function spridisi_booking_url() {
 	if ( null !== spridisi_homepage_field( 'contact', 'primary' ) ) {
-		return spridisi_homepage_link( 'contact', 'primary' );
+		return spridisi_reservation_link( spridisi_homepage_link( 'contact', 'primary' ) );
 	}
 	$url   = get_theme_mod( 'spridisi_booking_url', '' );
 	$email = sanitize_email( get_theme_mod( 'spridisi_email', '' ) );
-	return $url ? $url : ( $email ? 'mailto:' . $email : '' );
+	return $url ? $url : ( $email ? 'mailto:' . $email : spridisi_reservation_link() );
 }
 
 function spridisi_content_children( $parent_id ) {

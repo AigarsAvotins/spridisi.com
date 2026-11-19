@@ -24,5 +24,5 @@ if ( $native_items ) {
 			?>
 			<article class="experience" data-reveal><div class="experience__image photo-frame"><?php spridisi_photo( $native_section ? $native_section : (string) $key, 'large', $experience_page ); ?></div><h3><?php echo esc_html( $label ); ?></h3><a class="experience__link" href="<?php echo esc_url( $url ); ?>"><span class="screen-reader-text"><?php echo esc_html( sprintf( __( '%1$s: %2$s', 'spridisi' ), $action, $label ) ); ?></span><span aria-hidden="true">↗</span></a><?php if ( $native_section && spridisi_homepage_body_markup( $native_section ) ) : ?><div class="experience__description"><?php spridisi_homepage_body( $native_section ); ?></div><?php elseif ( $experience_page ) : ?><div class="experience__description"><?php if ( $experience_page->post_excerpt ) : ?><p><?php echo esc_html( wp_strip_all_tags( $experience_page->post_excerpt ) ); ?></p><?php endif; ?><?php spridisi_page_content( $experience_page ); ?></div><?php endif; ?></article>
 		<?php endforeach; ?>
-	</div></div>
+	</div><?php spridisi_section_actions( 'experiences' ); ?></div>
 </section>

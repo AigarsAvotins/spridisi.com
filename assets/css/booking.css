@@ -1,0 +1,34 @@
+.site-main.booking-page { width: min(100% - var(--gutter) * 2, 80rem); }
+.booking-layout { display: grid; align-items: start; gap: 3rem; }
+.booking-layout > *, .request-dates > * { min-width: 0; }
+.booking-intro h1 { margin-block: 1.5rem; }
+.booking-intro .spridisi-field-eyebrow { font: 600 0.6875rem var(--sans); }
+.booking-intro .spridisi-field-intro { max-width: 36rem; font-size: 1.125rem; line-height: 1.8; }
+.booking-intro .spridisi-field-notice, .booking-notice { margin-top: 2rem; padding-left: 1rem; border-left: 3px solid var(--copper); font-weight: 600; }
+.booking-request-form fieldset { min-width: 0; margin: 0 0 2rem; padding: 0; border: 0; }
+.booking-request-form legend { width: 100%; margin-bottom: 1.25rem; padding: 0 0 0.75rem; border-bottom: 1px solid var(--stone); font-family: var(--serif); font-size: 1.375rem; }
+.request-field { margin-bottom: 1.25rem; }
+.request-field > label { display: block; margin-bottom: 0.5rem; font-weight: 600; }
+.request-required { font-family: var(--sans); font-size: 0.75rem; font-weight: 400; }
+.request-field input, .request-field select, .request-field textarea { display: block; width: 100%; min-width: 0; min-height: 3rem; padding: 0.75rem; border: 1px solid #747c70; border-radius: 0; color: var(--ink); background: #fff; font: inherit; }
+.request-field input[type="date"] { appearance: none; }
+.request-field textarea { resize: vertical; }
+.request-field input:focus-visible, .request-field select:focus-visible, .request-field textarea:focus-visible { outline: 2px solid var(--forest); outline-offset: 3px; }
+.request-dates { display: grid; gap: 0 1.25rem; }
+.request-choice { display: flex; align-items: flex-start; gap: 0.75rem; min-height: 2.75rem; padding-block: 0.5rem; cursor: pointer; }
+.request-choice input { flex: 0 0 auto; width: 1.25rem; height: 1.25rem; margin: 0.25rem 0 0; accent-color: var(--forest); }
+.request-choice small { display: block; color: #576153; font-size: 0.8125rem; }
+.request-consent { margin-bottom: 1.5rem; }
+.request-help { margin: 0.5rem 0 0; color: #576153; font-size: 0.8125rem; }
+.request-error { margin: 0.5rem 0 0; color: #8c2822; font-size: 0.875rem; }
+.request-status { margin-bottom: 2rem; padding: 1.5rem; border: 1px solid var(--forest); }
+.request-status h2 { font-size: 1.75rem; line-height: 1.3; }
+.request-status--error { border-color: #8c2822; }
+.request-status--error h2 { font-family: var(--sans); font-size: 1rem; font-weight: 600; }
+.request-status li { margin-bottom: 0.5rem; }
+.request-status p:last-child { margin-bottom: 0; }
+.booking-request-form [aria-invalid="true"] { border-color: #8c2822; }
+.request-trap { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+.booking-request-form .request-submit { width: auto; max-width: 100%; min-height: 3.25rem; white-space: normal; }
+@media (min-width: 40rem) { .request-dates { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 68rem) { .booking-layout { grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr); gap: 5rem; } }
