@@ -69,6 +69,14 @@
 		let target;
 		try { target = document.getElementById(decodeURIComponent(url.hash.slice(1))); } catch { return; }
 		if (!target) return;
+		if ('#sakums' === url.hash && !reducedMotion.matches) {
+			document.querySelectorAll('.hero__image').forEach((image) => {
+				image.getAnimations().forEach((animation) => {
+					animation.currentTime = 0;
+					animation.play();
+				});
+			});
+		}
 		event.preventDefault();
 		if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');
 		target.focus({ preventScroll: true });
