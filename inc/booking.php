@@ -26,6 +26,10 @@ function spridisi_reservation_link( $fallback = '' ) {
 	return $page ? get_permalink( $page ) : $fallback;
 }
 
+function spridisi_reservation_cta_label() {
+	return __( 'Noskaidro cenu un rezervē', 'spridisi' );
+}
+
 function spridisi_request_events() {
 	return array( 'wedding' => __( 'Kāzas', 'spridisi' ), 'birthday' => __( 'Dzimšanas diena', 'spridisi' ), 'family' => __( 'Ģimenes svētki', 'spridisi' ), 'corporate' => __( 'Korporatīvs pasākums', 'spridisi' ), 'stay' => __( 'Nakšņošana', 'spridisi' ), 'sauna' => __( 'Atpūta ar pirti', 'spridisi' ), 'other' => __( 'Cits', 'spridisi' ) );
 }
@@ -420,7 +424,7 @@ function spridisi_request_form() {
 	if ( isset( $errors['consent'] ) ) {
 		echo '<p class="request-error" id="request-consent-error">' . esc_html( $errors['consent'] ) . '</p>';
 	}
-	echo '</div><button class="button request-submit" type="submit">' . esc_html__( 'Noskaidro cenu un rezervē', 'spridisi' ) . '</button></form>';
+	echo '</div><button class="button request-submit" type="submit">' . esc_html( spridisi_reservation_cta_label() ) . '</button></form>';
 }
 
 function spridisi_request_page_content() {
@@ -534,7 +538,7 @@ function spridisi_request_assets() {
 		'spaces' => __( 'Izvēlies vismaz vienu telpu vai piedāvājumu.', 'spridisi' ),
 		'prices' => array( 'smallHall' => array( 'upTo15' => 150, 'upTo25' => 180 ), 'largeHall' => array( 'upTo30' => 250, 'upTo40' => 300, 'over40' => 350 ), 'wedding' => 400, 'sauna' => 80, 'overnight' => 12 ),
 		'sending' => __( 'Nosūta…', 'spridisi' ),
-		'submit' => __( 'Noskaidro cenu un rezervē', 'spridisi' ),
+		'submit' => spridisi_reservation_cta_label(),
 	) );
 }
 add_action( 'wp_enqueue_scripts', 'spridisi_request_assets' );

@@ -279,7 +279,7 @@ function spridisi_homepage_starter_content() {
 		spridisi_seed_text( 'eyebrow', spridisi_section_summary( 'contact', 'VECSĒLPILS • SĒLIJA' ) ),
 		spridisi_seed_text( 'title', spridisi_section_title( 'hero', 'Te ir tā laimes zeme.' ), true ),
 		spridisi_seed_text( 'text', spridisi_section_summary( 'hero', 'Vieta Vecsēlpilī, kur svinēt, atpūsties un piedzīvot Sēliju.' ) ),
-		spridisi_seed_button( 'primary', 'Rezervēt', '#kontakti' ),
+		spridisi_seed_button( 'primary', spridisi_reservation_cta_label(), '#kontakti' ),
 		spridisi_seed_button( 'secondary', 'Iepazīt Sprīdīšus', '#ievads' ),
 		spridisi_seed_image( 'hero' ),
 	) );
@@ -296,6 +296,8 @@ function spridisi_homepage_starter_content() {
 		spridisi_seed_text( 'large-hall', '' ),
 		spridisi_seed_text( 'small-hall-title', 'Mazā zāle', true ),
 		spridisi_seed_text( 'small-hall', '' ),
+		spridisi_seed_text( 'outdoor-title', 'Āra terase un teritorija', true ),
+		spridisi_seed_text( 'outdoor', '' ),
 		spridisi_seed_button( 'primary', 'Par svinībām', '#kontakti' ),
 		spridisi_seed_image( 'venue' ),
 	) );
@@ -324,7 +326,7 @@ function spridisi_homepage_starter_content() {
 		spridisi_seed_text( 'title', spridisi_section_title( 'contact', 'Tiekamies Sprīdīšos.' ), true ),
 		spridisi_seed_text( 'location', spridisi_section_summary( 'contact', 'Vecsēlpils • Sēlija' ) ),
 		spridisi_seed_body( 'contact' ),
-		spridisi_seed_button( 'primary', 'Sazināties / Rezervēt', spridisi_booking_url() ),
+		spridisi_seed_button( 'primary', spridisi_reservation_cta_label(), spridisi_booking_url() ),
 	) );
 	return serialize_blocks( array( spridisi_seed_group( 'spridisi-homepage-content', __( 'Sprīdīši homepage content', 'spridisi' ), $sections ) ) );
 }
