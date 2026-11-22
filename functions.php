@@ -83,8 +83,20 @@ function spridisi_default_contact_details() {
 	);
 }
 
+function spridisi_default_review_details() {
+	return array(
+		'google_rating' => '',
+		'google_review_count' => '',
+		'google_reviews' => '',
+		'booking_rating' => '9.2',
+		'booking_review_count' => '11',
+		'booking_reviews' => '',
+	);
+}
+
 function spridisi_customize_register( $wp_customize ) {
 	$wp_customize->add_section( 'spridisi_homepage', array( 'title' => __( 'Sprīdīši: homepage', 'spridisi' ), 'priority' => 30 ) );
+	$wp_customize->add_section( 'spridisi_reviews', array( 'title' => __( 'Sprīdīši: reviews', 'spridisi' ), 'priority' => 31 ) );
 	$images = array(
 		'hero'          => __( 'Hero', 'spridisi' ),
 		'venue'         => __( 'Venue', 'spridisi' ),
@@ -113,6 +125,19 @@ function spridisi_customize_register( $wp_customize ) {
 	foreach ( $fields as $key => $field ) {
 		$wp_customize->add_setting( 'spridisi_' . $key, array( 'default' => $field[3], 'sanitize_callback' => $field[2] ) );
 		$wp_customize->add_control( 'spridisi_' . $key, array( 'label' => $field[0], 'section' => 'spridisi_homepage', 'type' => $field[1] ) );
+	}
+	$review_defaults = spridisi_default_review_details();
+	$review_fields = array(
+		'google_rating' => array( __( 'Google overall rating (out of 5)', 'spridisi' ), 'text', 'sanitize_text_field' ),
+		'google_review_count' => array( __( 'Google review count', 'spridisi' ), 'number', 'absint' ),
+		'google_reviews' => array( __( 'Google review excerpts (one per paragraph)', 'spridisi' ), 'textarea', 'sanitize_textarea_field' ),
+		'booking_rating' => array( __( 'Booking.com overall rating (out of 10)', 'spridisi' ), 'text', 'sanitize_text_field' ),
+		'booking_review_count' => array( __( 'Booking.com review count', 'spridisi' ), 'number', 'absint' ),
+		'booking_reviews' => array( __( 'Booking.com review excerpts (one per paragraph)', 'spridisi' ), 'textarea', 'sanitize_textarea_field' ),
+	);
+	foreach ( $review_fields as $key => $field ) {
+		$wp_customize->add_setting( 'spridisi_' . $key, array( 'default' => $review_defaults[ $key ], 'sanitize_callback' => $field[2] ) );
+		$wp_customize->add_control( 'spridisi_' . $key, array( 'label' => $field[0], 'section' => 'spridisi_reviews', 'type' => $field[1] ) );
 	}
 	$wp_customize->add_setting( 'spridisi_history_page', array( 'default' => 0, 'sanitize_callback' => 'absint' ) );
 	$wp_customize->add_control( 'spridisi_history_page', array( 'label' => __( 'Full history page', 'spridisi' ), 'section' => 'spridisi_homepage', 'type' => 'dropdown-pages' ) );

@@ -27,7 +27,57 @@
 			<?php endforeach; ?>
 			<?php if ( ! $has_social ) : ?><p class="footer-pending"><?php esc_html_e( 'Sociālās saites tiks papildinātas.', 'spridisi' ); ?></p><?php endif; ?>
 		</div>
-	</div><div class="footer-bottom"><span>© <?php echo esc_html( wp_date( 'Y' ) ); ?> <?php esc_html_e( 'SPRĪDĪŠI', 'spridisi' ); ?></span><span><?php echo esc_html( spridisi_section_title( 'hero', __( 'Te ir tā laimes zeme.', 'spridisi' ) ) ); ?></span><a href="<?php echo esc_url( spridisi_home_anchor( 'sakums' ) ); ?>"><?php esc_html_e( 'Uz sākumu', 'spridisi' ); ?> <span aria-hidden="true">↑</span></a></div></div>
+	</div>
+<?php
+$review_defaults = spridisi_default_review_details();
+$review_sources = array(
+	'google' => array(
+		'label' => 'Google',
+		'rating' => get_theme_mod( 'spridisi_google_rating', $review_defaults['google_rating'] ),
+		'count' => absint( get_theme_mod( 'spridisi_google_review_count', $review_defaults['google_review_count'] ) ),
+		'reviews' => get_theme_mod( 'spridisi_google_reviews', $review_defaults['google_reviews'] ),
+		'scale' => '5',
+		'url' => 'https://www.google.com/maps/place/Vecs%C4%93lpils+SPR%C4%AAD%C4%AA%C5%A0I/@56.5885515,25.6567323,17z/data=!4m8!3m7!1s0x46e9afeec58a9a53:0x52425a7be3abcf70!8m2!3d56.5885486!4d25.6593072!9m1!1b1!16s%2Fg%2F11qqynwcrm',
+	),
+	'booking' => array(
+		'label' => 'Booking.com',
+		'rating' => get_theme_mod( 'spridisi_booking_rating', $review_defaults['booking_rating'] ),
+		'count' => absint( get_theme_mod( 'spridisi_booking_review_count', $review_defaults['booking_review_count'] ) ),
+		'reviews' => get_theme_mod( 'spridisi_booking_reviews', $review_defaults['booking_reviews'] ),
+		'scale' => '10',
+		'url' => 'https://www.booking.com/hotel/lv/brivdienu-maja-spridisi-te-ir-ta-laimes-zeme.lv.html',
+	),
+);
+$show_reviews = false;
+foreach ( $review_sources as $review_source ) {
+	if ( trim( (string) $review_source['rating'] ) || $review_source['count'] || trim( (string) $review_source['reviews'] ) ) {
+		$show_reviews = true;
+		break;
+	}
+}
+if ( $show_reviews ) :
+	?>
+	<section class="footer-reviews" aria-labelledby="footer-reviews-heading">
+		<div class="container">
+			<h2 id="footer-reviews-heading"><?php esc_html_e( 'Viesu atsauksmes', 'spridisi' ); ?></h2>
+			<div class="footer-review-grid">
+				<?php foreach ( $review_sources as $review_source ) : ?>
+					<?php if ( ! trim( (string) $review_source['rating'] ) && ! $review_source['count'] && ! trim( (string) $review_source['reviews'] ) ) : ?>
+						<?php continue; ?>
+					<?php endif; ?>
+					<article class="footer-review-source">
+						<h3><?php echo esc_html( $review_source['label'] ); ?></h3>
+						<?php if ( trim( (string) $review_source['rating'] ) ) : ?><p class="footer-review-score"><strong><?php echo esc_html( $review_source['rating'] ); ?></strong><span> / <?php echo esc_html( $review_source['scale'] ); ?></span></p><?php endif; ?>
+						<?php if ( $review_source['count'] ) : ?><p class="footer-review-count"><?php printf( esc_html( _n( '%s atsauksme', '%s atsauksmes', $review_source['count'], 'spridisi' ) ), esc_html( number_format_i18n( $review_source['count'] ) ) ); ?></p><?php endif; ?>
+						<?php if ( trim( (string) $review_source['reviews'] ) ) : ?><div class="footer-review-excerpts"><?php echo nl2br( esc_html( $review_source['reviews'] ) ); ?></div><?php endif; ?>
+						<a class="footer-review-link" href="<?php echo esc_url( $review_source['url'] ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Skatīt atsauksmes', 'spridisi' ); ?><span aria-hidden="true"> ↗</span></a>
+					</article>
+				<?php endforeach; ?>
+			</div>
+		</div>
+	</section>
+<?php endif; ?>
+<div class="container"><div class="footer-bottom"><span>© <?php echo esc_html( wp_date( 'Y' ) ); ?> <?php esc_html_e( 'SPRĪDĪŠI', 'spridisi' ); ?></span><span><?php echo esc_html( spridisi_section_title( 'hero', __( 'Te ir tā laimes zeme.', 'spridisi' ) ) ); ?></span><a href="<?php echo esc_url( spridisi_home_anchor( 'sakums' ) ); ?>"><?php esc_html_e( 'Uz sākumu', 'spridisi' ); ?> <span aria-hidden="true">↑</span></a></div></div>
 </footer>
 <?php wp_footer(); ?>
 </body>

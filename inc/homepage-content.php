@@ -95,8 +95,8 @@ function spridisi_homepage_link( $section, $field, $fallback = '' ) {
 	return $processor->next_tag( 'A' ) ? esc_url_raw( $processor->get_attribute( 'href' ) ?? '' ) : '';
 }
 
-function spridisi_homepage_image( $section ) {
-	$block = spridisi_homepage_field( $section, 'image' );
+function spridisi_homepage_image( $section, $field = 'image' ) {
+	$block = spridisi_homepage_field( $section, $field );
 	if ( null === $block ) {
 		return null;
 	}
@@ -168,8 +168,8 @@ function spridisi_homepage_public_body_block( $block ) {
 	return $block;
 }
 
-function spridisi_homepage_photo( $section, $class = 'editorial-photo', $size = 'large', $decorative = false ) {
-	$image = spridisi_homepage_image( $section );
+function spridisi_homepage_photo( $section, $class = 'editorial-photo', $size = 'large', $decorative = false, $field = 'image' ) {
+	$image = spridisi_homepage_image( $section, $field );
 	if ( empty( $image['url'] ) ) {
 		return false;
 	}
@@ -243,28 +243,28 @@ function spridisi_seed_button( $field, $label, $url ) {
 	return $block;
 }
 
-function spridisi_seed_image( $section ) {
-	$page = spridisi_section_page( $section );
+function spridisi_seed_image( $section, $field = 'image' ) {
+	$page = 'image' === $field ? spridisi_section_page( $section ) : null;
 	$image_id = $page ? get_post_thumbnail_id( $page ) : 0;
-	$image_id = $image_id ? $image_id : absint( get_theme_mod( 'spridisi_image_' . $section, 0 ) );
-	$attributes = array( 'className' => 'spridisi-field-image', 'metadata' => array( 'name' => __( 'Photograph', 'spridisi' ) ), 'sizeSlug' => 'full', 'linkDestination' => 'none' );
+	$image_id = $image_id ? $image_id : ( 'image' === $field ? absint( get_theme_mod( 'spridisi_image_' . $section, 0 ) ) : 0 );
+	$attributes = array( 'className' => 'spridisi-field-' . $field, 'metadata' => array( 'name' => __( 'Photograph', 'spridisi' ) ), 'sizeSlug' => 'full', 'linkDestination' => 'none' );
 	$alt = '';
 	$url = $image_id ? wp_get_attachment_image_url( $image_id, 'full' ) : '';
 	if ( $url ) {
 		$attributes['id'] = $image_id;
 		$alt = get_post_meta( $image_id, '_wp_attachment_image_alt', true );
-	} elseif ( in_array( $section, array( 'hero', 'venue', 'sauna' ), true ) ) {
+	} elseif ( 'image' === $field && in_array( $section, array( 'hero', 'venue', 'sauna' ), true ) ) {
 		$url = get_theme_file_uri( '/assets/images/' . $section . '-spridisi.jpg' );
 		$alts = array( 'hero' => '', 'venue' => 'Sprīdīšu svinību zāle ar klātiem galdiem un koka sijām.', 'sauna' => 'Sprīdīšu koka pirts ar pirts slotām uz āra galda.' );
 		$alt = $alts[ $section ];
 	}
 	if ( ! $url ) {
-		return spridisi_seed_block( 'core/image', $attributes, '<figure class="wp-block-image size-full spridisi-field-image"><img alt=""/></figure>' );
+		return spridisi_seed_block( 'core/image', $attributes, '<figure class="wp-block-image size-full spridisi-field-' . esc_attr( $field ) . '"><img alt=""/></figure>' );
 	}
 	$attributes['url'] = $url;
 	$attributes['alt'] = $alt;
 	$image_class = $image_id ? ' class="wp-image-' . $image_id . '"' : '';
-	return spridisi_seed_block( 'core/image', $attributes, '<figure class="wp-block-image size-full spridisi-field-image"><img src="' . esc_url( $url ) . '" alt="' . esc_attr( $alt ) . '"' . $image_class . '/></figure>' );
+	return spridisi_seed_block( 'core/image', $attributes, '<figure class="wp-block-image size-full spridisi-field-' . esc_attr( $field ) . '"><img src="' . esc_url( $url ) . '" alt="' . esc_attr( $alt ) . '"' . $image_class . '/></figure>' );
 }
 
 function spridisi_seed_body( $section, $fallback = '' ) {
@@ -294,8 +294,10 @@ function spridisi_homepage_starter_content() {
 		spridisi_seed_body( 'venue' ),
 		spridisi_seed_text( 'large-hall-title', 'Lielā zāle', true ),
 		spridisi_seed_text( 'large-hall', '' ),
+		spridisi_seed_image( 'venue', 'large-hall-image' ),
 		spridisi_seed_text( 'small-hall-title', 'Mazā zāle', true ),
 		spridisi_seed_text( 'small-hall', '' ),
+		spridisi_seed_image( 'venue', 'small-hall-image' ),
 		spridisi_seed_text( 'outdoor-title', 'Āra terase un teritorija', true ),
 		spridisi_seed_text( 'outdoor', '' ),
 		spridisi_seed_button( 'primary', 'Par svinībām', '#kontakti' ),
@@ -462,3 +464,89 @@ function spridisi_homepage_add_outdoor() {
 	exit;
 }
 add_action( 'admin_post_spridisi_homepage_add_outdoor', 'spridisi_homepage_add_outdoor' );
+
+function spridisi_homepage_hall_images_notice() {
+	if ( ! current_user_can( 'manage_options' ) || ! current_user_can( 'publish_pages' ) ) {
+		return;
+	}
+	$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+	if ( ! $screen || 'edit-page' !== $screen->id ) {
+		return;
+	}
+	$sections = spridisi_homepage_sections();
+	if ( ! isset( $sections['venue'] ) || ( spridisi_homepage_field( 'venue', 'large-hall-image' ) && spridisi_homepage_field( 'venue', 'small-hall-image' ) ) ) {
+		return;
+	}
+	echo '<div class="notice notice-info"><p>' . esc_html__( 'Pievieno sākumlapas redaktorā atsevišķus attēlu blokus Lielajai un Mazajai zālei. Esošie zāļu apraksti netiks mainīti.', 'spridisi' ) . '</p><form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
+	wp_nonce_field( 'spridisi_homepage_add_hall_images' );
+	echo '<input type="hidden" name="action" value="spridisi_homepage_add_hall_images">';
+	submit_button( __( 'Pievienot zāļu attēlu blokus', 'spridisi' ), 'secondary', 'submit', false );
+	echo '</form></div>';
+}
+add_action( 'admin_notices', 'spridisi_homepage_hall_images_notice' );
+
+function spridisi_homepage_add_hall_images() {
+	if ( ! current_user_can( 'manage_options' ) || ! current_user_can( 'publish_pages' ) ) {
+		wp_die( esc_html__( 'Tev nav atļauts atjaunināt šo sākumlapu.', 'spridisi' ) );
+	}
+	check_admin_referer( 'spridisi_homepage_add_hall_images' );
+	$homepage_id = absint( get_option( 'page_on_front' ) );
+	if ( ! $homepage_id || ! current_user_can( 'edit_post', $homepage_id ) ) {
+		wp_die( esc_html__( 'Sākumlapa nav atrasta vai to nevar rediģēt.', 'spridisi' ) );
+	}
+	$blocks = parse_blocks( get_post_field( 'post_content', $homepage_id ) );
+	$updated = false;
+	foreach ( $blocks as $root_index => $root ) {
+		if ( ! spridisi_block_has_class( $root, 'spridisi-homepage-content' ) ) {
+			continue;
+		}
+		foreach ( $root['innerBlocks'] as $section_index => $section ) {
+			if ( ! spridisi_block_has_class( $section, 'spridisi-content-venue' ) ) {
+				continue;
+			}
+			foreach ( array( 'large-hall', 'small-hall' ) as $hall ) {
+				$image_field = $hall . '-image';
+				$has_image = false;
+				$insert_index = count( $section['innerBlocks'] );
+				foreach ( $section['innerBlocks'] as $index => $block ) {
+					if ( spridisi_block_has_class( $block, 'spridisi-field-' . $image_field ) ) {
+						$has_image = true;
+					}
+					if ( spridisi_block_has_class( $block, 'spridisi-field-' . $hall ) ) {
+						$insert_index = $index + 1;
+					}
+				}
+				if ( $has_image ) {
+					continue;
+				}
+				$new_block = spridisi_seed_image( 'venue', $image_field );
+				$inner_content_index = count( $section['innerContent'] ) - 1;
+				$child_index = 0;
+				foreach ( $section['innerContent'] as $content_index => $content ) {
+					if ( null !== $content ) {
+						continue;
+					}
+					if ( $child_index === $insert_index ) {
+						$inner_content_index = $content_index;
+						break;
+					}
+					++$child_index;
+				}
+				array_splice( $section['innerBlocks'], $insert_index, 0, array( $new_block ) );
+				array_splice( $section['innerContent'], $inner_content_index, 0, array( null ) );
+				$updated = true;
+			}
+			$blocks[ $root_index ]['innerBlocks'][ $section_index ] = $section;
+			break 2;
+		}
+	}
+	if ( $updated ) {
+		$result = wp_update_post( wp_slash( array( 'ID' => $homepage_id, 'post_content' => serialize_blocks( $blocks ) ) ), true );
+		if ( is_wp_error( $result ) ) {
+			wp_die( esc_html( $result->get_error_message() ) );
+		}
+	}
+	wp_safe_redirect( get_edit_post_link( $homepage_id, 'raw' ) );
+	exit;
+}
+add_action( 'admin_post_spridisi_homepage_add_hall_images', 'spridisi_homepage_add_hall_images' );

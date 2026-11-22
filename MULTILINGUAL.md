@@ -106,6 +106,10 @@ it does not render the editor's layout as the homepage design.
 Editable content includes hero eyebrow, heading, supporting text and both buttons;
 section headings, labels and descriptions; large/small hall and terrace headings and
 information;
+each hall also has its own optional Media block for a photograph. If an existing
+homepage editor does not yet show image fields beneath **Lielā zāle** and **Mazā
+zāle**, use the **Pievienot zāļu attēlu blokus** notice under **Pages > All Pages**.
+It appends only the missing image blocks and preserves the existing hall text.
 accommodation and sauna descriptions and buttons; each experience including SUP;
 three gallery images and introductory text; closing booking heading, label and
 destination; location identity and contact information. Empty descriptions do not
@@ -127,6 +131,12 @@ Contact details belong in the Contact description using normal paragraphs and
 links. They also appear in the footer. The closing Button's link is the booking
 destination (URL, mailto, or tel). It stays disabled until a real destination is
 provided. Existing Customizer contact values remain backward-compatible fallbacks.
+
+Manual review scores and excerpts are managed under **Appearance > Customize >
+Sprīdīši: reviews**. Booking.com defaults to the publicly displayed 9.2/10 from 11
+reviews observed on 2026-11-22. Google values and review excerpts start blank and
+must be entered from verified current sources; no review text is fetched or
+invented automatically. Each provider has a URL link to its public review page.
 
 Content-only locks protect section order and layout. The homepage's code editor
 and lock controls are disabled. The owner edits content; structural layout changes
