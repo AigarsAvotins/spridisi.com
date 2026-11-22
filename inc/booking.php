@@ -274,14 +274,25 @@ function spridisi_request_process( $input, $page_id ) {
 }
 
 function spridisi_request_route() {
-	if ( ! is_page_template( 'page-templates/booking.php' ) ) {
+	$method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
+	$page_id = is_page_template( 'page-templates/booking.php' ) ? get_queried_object_id() : 0;
+	if ( 'POST' !== $method && ! $page_id ) {
 		return;
+	}
+	if ( 'POST' === $method && ! $page_id ) {
+		$booking_page = spridisi_request_page();
+		$request_path = isset( $_SERVER['REQUEST_URI'] ) && is_string( $_SERVER['REQUEST_URI'] ) ? wp_parse_url( wp_unslash( $_SERVER['REQUEST_URI'] ), PHP_URL_PATH ) : '';
+		$booking_path = $booking_page ? wp_parse_url( get_permalink( $booking_page ), PHP_URL_PATH ) : '';
+		if ( ! $booking_page || ! $request_path || untrailingslashit( $request_path ) !== untrailingslashit( $booking_path ) ) {
+			return;
+		}
+		$page_id = $booking_page->ID;
 	}
 	if ( ! defined( 'DONOTCACHEPAGE' ) ) {
 		define( 'DONOTCACHEPAGE', true );
 	}
 	nocache_headers();
-	if ( 'POST' !== ( $_SERVER['REQUEST_METHOD'] ?? 'GET' ) ) {
+	if ( 'POST' !== $method ) {
 		spridisi_request_browser_cookie();
 		return;
 	}
@@ -289,7 +300,6 @@ function spridisi_request_route() {
 		$GLOBALS['spridisi_request_state'] = array( 'values' => array(), 'errors' => array( 'form' => spridisi_request_error_message() ) );
 		return;
 	}
-	$page_id = get_queried_object_id();
 	$state = spridisi_request_process( wp_unslash( $_POST ), $page_id );
 	if ( ! empty( $state['accepted'] ) ) {
 		$path = wp_parse_url( get_permalink( $page_id ), PHP_URL_PATH );
