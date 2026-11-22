@@ -53,23 +53,38 @@ function spridisi_history_import_parse( $content ) {
 	return array( 'intro' => wp_kses_post( $intro ), 'entries' => $entries );
 }
 
+function spridisi_history_import_available( $source ) {
+	if ( ! $source || 'page' !== $source->post_type || 'publish' !== $source->post_status || ! current_user_can( 'manage_options' ) || ! current_user_can( 'publish_pages' ) || ! current_user_can( 'edit_post', $source->ID ) || ! get_option( 'page_on_front' ) ) {
+		return false;
+	}
+	$history_page = spridisi_section_page( 'history' );
+	if ( $history_page && $source->ID === $history_page->ID ) {
+		$history_page = null;
+	}
+	if ( ! $history_page ) {
+		return true;
+	}
+	if ( 'complete' === get_post_meta( $history_page->ID, '_spridisi_history_import_state', true ) ) {
+		return false;
+	}
+	$imported_source_id = (int) get_post_meta( $history_page->ID, '_spridisi_history_source_id', true );
+	if ( $imported_source_id && $imported_source_id !== (int) $source->ID ) {
+		return false;
+	}
+	foreach ( spridisi_content_children( $history_page->ID ) as $child ) {
+		if ( (int) get_post_meta( $child->ID, '_spridisi_history_source_id', true ) !== (int) $source->ID ) {
+			return false;
+		}
+	}
+	return true;
+}
+
 function spridisi_history_import_notice() {
 	if ( ! current_user_can( 'manage_options' ) || ! current_user_can( 'publish_pages' ) ) {
 		return;
 	}
 	$source = get_page_by_path( 'history', OBJECT, 'page' );
-	$homepage_id = absint( get_option( 'page_on_front' ) );
-	$history_page = spridisi_section_page( 'history' );
-	$history_children = $history_page ? spridisi_content_children( $history_page->ID ) : array();
-	$has_unrelated_children = false;
-	foreach ( $history_children as $child ) {
-		if ( (int) get_post_meta( $child->ID, '_spridisi_history_source_id', true ) !== (int) ( $source ? $source->ID : 0 ) ) {
-			$has_unrelated_children = true;
-			break;
-		}
-	}
-	$import_state = $history_page ? get_post_meta( $history_page->ID, '_spridisi_history_import_state', true ) : '';
-	if ( ! $source || ! $homepage_id || ( $history_page && $source->ID === $history_page->ID ) || $has_unrelated_children || 'complete' === $import_state || ( $history_page && get_post_meta( $history_page->ID, '_spridisi_history_source_id', true ) && (int) get_post_meta( $history_page->ID, '_spridisi_history_source_id', true ) !== (int) $source->ID ) ) {
+	if ( ! spridisi_history_import_available( $source ) ) {
 		return;
 	}
 	echo '<div class="notice notice-info"><p>' . esc_html__( 'Pārnes vēstures faktus, attēlus un atsauces no lapas “Vēsture” uz esošās tēmas laika līniju. Avota lapa un tās URL paliks nemainīgi.', 'spridisi' ) . '</p><form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
@@ -80,14 +95,26 @@ function spridisi_history_import_notice() {
 }
 add_action( 'admin_notices', 'spridisi_history_import_notice' );
 
+function spridisi_history_import_row_action( $actions, $post ) {
+	if ( ! $post instanceof WP_Post || 'history' !== $post->post_name || ! spridisi_history_import_available( $post ) ) {
+		return $actions;
+	}
+	$url = add_query_arg( array( 'action' => 'spridisi_import_history', 'history_source_id' => $post->ID ), admin_url( 'admin-post.php' ) );
+	$url = wp_nonce_url( $url, 'spridisi_import_history' );
+	$actions['spridisi_import_history'] = '<a href="' . esc_url( $url ) . '">' . esc_html__( 'Pārnest uz laika līniju', 'spridisi' ) . '</a>';
+	return $actions;
+}
+add_filter( 'page_row_actions', 'spridisi_history_import_row_action', 10, 2 );
+
 function spridisi_import_history() {
 	if ( ! current_user_can( 'manage_options' ) || ! current_user_can( 'publish_pages' ) ) {
 		wp_die( esc_html__( 'Tev nav atļauts pārnest vēstures saturu.', 'spridisi' ) );
 	}
 	check_admin_referer( 'spridisi_import_history' );
-	$source = get_page_by_path( 'history', OBJECT, 'page' );
+	$source_id = isset( $_REQUEST['history_source_id'] ) ? absint( wp_unslash( $_REQUEST['history_source_id'] ) ) : 0;
+	$source = $source_id ? get_post( $source_id ) : get_page_by_path( 'history', OBJECT, 'page' );
 	$homepage_id = absint( get_option( 'page_on_front' ) );
-	if ( ! $source || 'publish' !== $source->post_status || ! current_user_can( 'edit_post', $source->ID ) || ! $homepage_id ) {
+	if ( ! spridisi_history_import_available( $source ) || ! $homepage_id ) {
 		wp_die( esc_html__( 'Publicētā vēstures lapa vai sākumlapa nav atrasta. Nekas netika mainīts.', 'spridisi' ) );
 	}
 	$parsed = spridisi_history_import_parse( $source->post_content );
@@ -95,10 +122,10 @@ function spridisi_import_history() {
 		wp_die( esc_html( $parsed->get_error_message() ) );
 	}
 	$history_page = spridisi_section_page( 'history' );
-	$history_children = $history_page ? spridisi_content_children( $history_page->ID ) : array();
 	if ( $history_page && $source->ID === $history_page->ID ) {
-		wp_die( esc_html__( 'Avota lapa ir tā pati lapa, kurā paredzēta laika līnija. Nekas netika mainīts.', 'spridisi' ) );
+		$history_page = null;
 	}
+	$history_children = $history_page ? spridisi_content_children( $history_page->ID ) : array();
 	foreach ( $history_children as $child ) {
 		if ( (int) get_post_meta( $child->ID, '_spridisi_history_source_id', true ) !== (int) $source->ID ) {
 			wp_die( esc_html__( 'Laika līnijā jau ir citi vēstures ieraksti. Dublikāti netika izveidoti.', 'spridisi' ) );
@@ -128,14 +155,17 @@ function spridisi_import_history() {
 	update_post_meta( $history_page->ID, '_spridisi_history_import_state', 'in_progress' );
 	$intro = $parsed['intro'];
 	$intro .= '<ul class="history-facts"><li><strong>1876</strong> ' . esc_html__( 'Būvniecības gads', 'spridisi' ) . '</li><li><strong>6897 ha</strong> ' . esc_html__( 'Platība', 'spridisi' ) . '</li><li><strong>16+</strong> ' . esc_html__( 'Muižas ēkas', 'spridisi' ) . '</li><li><strong>96%</strong> ' . esc_html__( 'Ēkas iznīcinātas', 'spridisi' ) . '</li></ul>';
-	if ( ! trim( wp_strip_all_tags( $history_page->post_content ) ) ) {
-		$updated = wp_update_post( wp_slash( array( 'ID' => $history_page->ID, 'post_content' => wp_kses_post( $intro ) ) ), true );
+	if ( (int) get_post_meta( $history_page->ID, '_spridisi_history_intro_source_id', true ) !== (int) $source->ID ) {
+		$existing_content = trim( $history_page->post_content );
+		$combined_content = $existing_content ? $existing_content . "\n\n" . wp_kses_post( $intro ) : wp_kses_post( $intro );
+		$updated = wp_update_post( wp_slash( array( 'ID' => $history_page->ID, 'post_content' => $combined_content ) ), true );
 		if ( is_wp_error( $updated ) ) {
 			if ( $created_history_page ) {
 				wp_delete_post( $history_page->ID, true );
 			}
 			wp_die( esc_html( $updated->get_error_message() ) );
 		}
+		update_post_meta( $history_page->ID, '_spridisi_history_intro_source_id', $source->ID );
 	}
 	$created_ids = array();
 	foreach ( $parsed['entries'] as $index => $entry ) {

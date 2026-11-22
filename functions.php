@@ -200,6 +200,13 @@ function spridisi_section_page( $section ) {
 			$sections[ $root_id ][ $page->menu_order ] = $page;
 		}
 	}
+	if ( 'history' === $section ) {
+		foreach ( $sections[ $root_id ] as $page ) {
+			if ( get_post_meta( $page->ID, '_spridisi_history_source_id', true ) ) {
+				return $page;
+			}
+		}
+	}
 	return isset( $slots[ $section ], $sections[ $root_id ][ $slots[ $section ] ] ) ? $sections[ $root_id ][ $slots[ $section ] ] : null;
 }
 

@@ -132,10 +132,11 @@ Content-only locks protect section order and layout. The homepage's code editor
 and lock controls are disabled. The owner edits content; structural layout changes
 remain a theme development task. History remains separate, using its current
 timeline renderer and child-page approach described below. After deploying the
-theme, an admin notice can migrate the published `/history/` page into the timeline.
-The source page and URL are preserved; each dated heading becomes an ordered child
-page, retaining its HTML, images, and source links. The migration is nonce- and
-capability-protected, idempotent, and skips existing unrelated timeline entries.
+theme, use the **Pārnest uz laika līniju** row action beside the published
+`/history/` page under **Pages > All Pages**. The source page and URL are preserved;
+each dated heading becomes an ordered child page, retaining its HTML, images, and
+source links. The migration is nonce- and capability-protected, idempotent, and
+skips existing unrelated timeline entries.
 
 Translate the actual homepage page with Polylang/WPML later. Each translated page
 stores its own native text/button/image blocks with the same stable structural
