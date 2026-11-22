@@ -11,6 +11,7 @@
 	const start = form.elements.start_date;
 	const end = form.elements.end_date;
 	const overnight = form.elements.overnight_guests;
+	const overnightField = form.querySelector('.request-overnight-field');
 	const spaces = [...form.querySelectorAll('input[name="spaces[]"]')];
 	const estimate = form.querySelector('.request-estimate');
 	const estimateAmount = form.querySelector('#request-estimate-amount');
@@ -23,6 +24,8 @@
 		form.querySelector('.request-other').hidden = !required;
 		const staying = spaces.some(field => field.checked && field.value === 'stay');
 		overnight.required = staying;
+		overnightField.hidden = !staying;
+		if (!staying) overnight.value = '';
 		end.min = start.value && start.value > form.dataset.today ? start.value : form.dataset.today;
 		updateEstimate();
 	};

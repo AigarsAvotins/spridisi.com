@@ -396,8 +396,12 @@ function spridisi_request_form() {
 			echo '<small>' . esc_html( $hints[ $key ] ) . '</small>';
 		}
 		echo '</span></label>';
+		if ( 'stay' === $key ) {
+			echo '<div class="request-overnight-field"' . ( in_array( 'stay', $values['spaces'] ?? array(), true ) ? '' : ' hidden' ) . '>';
+			spridisi_request_field( 'overnight_guests', __( 'Nakšņotāju skaits', 'spridisi' ), 'number', false, array( 'min' => 0, 'step' => 1, 'inputmode' => 'numeric' ), __( 'Norādi skaitu, ja izvēlēta nakšņošana.', 'spridisi' ) );
+			echo '</div>';
+		}
 	}
-	spridisi_request_field( 'overnight_guests', __( 'Nakšņotāju skaits', 'spridisi' ), 'number', false, array( 'min' => 0, 'step' => 1, 'inputmode' => 'numeric' ), __( 'Norādi skaitu, ja izvēlēta nakšņošana.', 'spridisi' ) );
 	echo '<div class="request-estimate" hidden><div role="status" aria-live="polite" aria-atomic="true"><p class="request-estimate-total"><strong>' . esc_html__( 'Aptuvenā summa', 'spridisi' ) . '</strong>: <output id="request-estimate-amount">—</output></p></div><p>' . esc_html__( 'Summa ir aptuvena un tiks precizēta pēc rezervācijas apstiprināšanas.', 'spridisi' ) . '</p></div>';
 	if ( isset( $errors['spaces'] ) ) {
 		echo '<p class="request-error" id="request-spaces-error">' . esc_html( $errors['spaces'] ) . '</p>';
@@ -416,7 +420,7 @@ function spridisi_request_form() {
 	if ( isset( $errors['consent'] ) ) {
 		echo '<p class="request-error" id="request-consent-error">' . esc_html( $errors['consent'] ) . '</p>';
 	}
-	echo '</div><button class="button request-submit" type="submit">' . esc_html__( 'Nosūtīt pieprasījumu', 'spridisi' ) . '</button></form>';
+	echo '</div><button class="button request-submit" type="submit">' . esc_html__( 'Noskaidro cenu un rezervē', 'spridisi' ) . '</button></form>';
 }
 
 function spridisi_request_page_content() {
@@ -530,7 +534,7 @@ function spridisi_request_assets() {
 		'spaces' => __( 'Izvēlies vismaz vienu telpu vai piedāvājumu.', 'spridisi' ),
 		'prices' => array( 'smallHall' => array( 'upTo15' => 150, 'upTo25' => 180 ), 'largeHall' => array( 'upTo30' => 250, 'upTo40' => 300, 'over40' => 350 ), 'wedding' => 400, 'sauna' => 80, 'overnight' => 12 ),
 		'sending' => __( 'Nosūta…', 'spridisi' ),
-		'submit' => __( 'Nosūtīt pieprasījumu', 'spridisi' ),
+		'submit' => __( 'Noskaidro cenu un rezervē', 'spridisi' ),
 	) );
 }
 add_action( 'wp_enqueue_scripts', 'spridisi_request_assets' );
