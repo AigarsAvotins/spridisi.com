@@ -4,7 +4,8 @@ $history_entries = spridisi_content_children( $history_page ? $history_page->ID 
 $timeline_items  = $history_entries ? $history_entries : array( null, null, null );
 $history_id      = $history_page ? $history_page->ID : absint( get_theme_mod( 'spridisi_history_page', 0 ) );
 $source_history  = get_page_by_path( 'history', OBJECT, 'page' );
-$history_url     = $source_history ? get_permalink( $source_history ) : ( $history_id ? get_permalink( $history_id ) : '' );
+$history_source_url = $history_page ? get_post_meta( $history_page->ID, '_spridisi_history_source_url', true ) : '';
+$history_url     = $history_source_url ? $history_source_url : ( $source_history ? get_permalink( $source_history ) : ( $history_id ? get_permalink( $history_id ) : '' ) );
 ?>
 <section id="stasts" class="history section-space" aria-labelledby="history-heading">
 	<div class="container"><div class="history__intro" data-reveal><p class="eyebrow section-kicker"><span class="section-number">06 /</span><?php esc_html_e( 'VIETAS ATMIŅA', 'spridisi' ); ?></p><h2 id="history-heading"><?php echo esc_html( spridisi_section_title( 'history', __( 'Šai vietai ir stāsts.', 'spridisi' ) ) ); ?></h2><p class="history__subtitle"><?php echo esc_html( spridisi_section_summary( 'history', __( 'Vecsēlpils un Sprīdīši cauri gadsimtiem.', 'spridisi' ) ) ); ?></p><?php spridisi_section_content( 'history' ); ?></div>
