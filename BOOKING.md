@@ -32,7 +32,7 @@ Requests are email-only: no submissions table, public/private post records, uplo
 or stored request bodies are created. Values remain in the POST response only after
 validation errors. Personal data is not placed in URLs or browser storage.
 
-The notification recipient is **Settings > General > Administration Email Address**.
+The notification recipient is **info@spridisi.com**.
 The visitor email is validated and can only supply the admin message's Reply-To;
 user input never controls arbitrary headers or the From address. Plain-text messages
 use `wp_mail()`, so an established SMTP/transactional delivery integration can handle

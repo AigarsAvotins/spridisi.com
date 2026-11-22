@@ -189,7 +189,7 @@ function spridisi_request_rate_allowed() {
 }
 
 function spridisi_request_send_mail( $data, $page_id ) {
-	$recipient = sanitize_email( get_option( 'admin_email' ) );
+	$recipient = sanitize_email( 'info@spridisi.com' );
 	if ( ! is_email( $recipient ) ) {
 		return false;
 	}
@@ -424,7 +424,7 @@ function spridisi_request_form() {
 	if ( isset( $errors['consent'] ) ) {
 		echo '<p class="request-error" id="request-consent-error">' . esc_html( $errors['consent'] ) . '</p>';
 	}
-	echo '</div><button class="button request-submit" type="submit">' . esc_html( spridisi_reservation_cta_label() ) . '</button></form>';
+	echo '</div><button class="button request-submit" type="submit">' . esc_html__( 'Nosūtīt', 'spridisi' ) . '</button></form>';
 }
 
 function spridisi_request_page_content() {
@@ -538,7 +538,7 @@ function spridisi_request_assets() {
 		'spaces' => __( 'Izvēlies vismaz vienu telpu vai piedāvājumu.', 'spridisi' ),
 		'prices' => array( 'smallHall' => array( 'upTo15' => 150, 'upTo25' => 180 ), 'largeHall' => array( 'upTo30' => 250, 'upTo40' => 300, 'over40' => 350 ), 'wedding' => 400, 'sauna' => 80, 'overnight' => 12 ),
 		'sending' => __( 'Nosūta…', 'spridisi' ),
-		'submit' => spridisi_reservation_cta_label(),
+		'submit' => __( 'Nosūtīt', 'spridisi' ),
 	) );
 }
 add_action( 'wp_enqueue_scripts', 'spridisi_request_assets' );
