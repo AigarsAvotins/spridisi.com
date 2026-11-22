@@ -21,8 +21,6 @@
 		<p class="eyebrow hero__eyebrow"><?php echo esc_html( spridisi_homepage_text( 'hero', 'eyebrow', spridisi_section_summary( 'contact', __( 'VECSĒLPILS • SĒLIJA', 'spridisi' ) ) ) ); ?></p>
 		<h1 id="hero-heading"><?php echo esc_html( spridisi_section_title( 'hero', __( 'Te ir tā laimes zeme.', 'spridisi' ) ) ); ?></h1>
 		<p class="hero__description"><?php echo esc_html( spridisi_section_summary( 'hero', __( 'Vieta Vecsēlpilī, kur svinēt, atpūsties un piedzīvot Sēliju.', 'spridisi' ) ) ); ?></p>
-		<?php spridisi_section_content( 'hero' ); ?>
-		<div class="hero__actions"><a class="text-link text-link--light" href="<?php echo esc_url( spridisi_homepage_link( 'hero', 'secondary', '#ievads' ) ); ?>"><?php echo esc_html( spridisi_homepage_text( 'hero', 'secondary', __( 'Iepazīt Sprīdīšus', 'spridisi' ) ) ); ?><span aria-hidden="true">↓</span></a></div>
 	</div>
 	<div class="hero__bottom container"><a class="scroll-cue" href="#ievads"><span class="scroll-cue__line" aria-hidden="true"></span><?php esc_html_e( 'Tālāk, nesteidzoties', 'spridisi' ); ?></a></div>
 </section>
