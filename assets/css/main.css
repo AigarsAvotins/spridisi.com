@@ -53,6 +53,9 @@ h3 { font-size: 1.75rem; }
 .header-inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1.25rem; min-height: 6rem; padding-block: 1rem; }
 .wordmark { display: inline-flex; flex-direction: column; font-family: var(--sans); font-size: 1.375rem; font-weight: 600; line-height: 1.1; text-decoration: none; white-space: nowrap; }
 .wordmark > span { margin-top: 0.5rem; font-family: var(--sans); font-size: 0.5rem; }
+.header-contact { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.75rem; order: 2; }
+.header-contact a { display: inline-flex; min-height: 2.75rem; align-items: center; color: inherit; font-size: 0.75rem; text-decoration: none; white-space: nowrap; }
+.header-contact a:hover { text-decoration: underline; }
 .header-booking { order: 2; margin-left: auto; }
 .primary-navigation { order: 4; flex-basis: 100%; max-height: 65svh; overflow-y: auto; }
 .primary-navigation ul, .footer-navigation ul { margin: 0; padding: 0; list-style: none; }
@@ -278,7 +281,8 @@ h3 { font-size: 1.75rem; }
 	.primary-navigation li { position: relative; }
 	.primary-navigation .sub-menu { position: absolute; top: 100%; left: -1rem; width: 12rem; padding: 0.5rem 1rem; background: var(--deep); visibility: hidden; }
 	.primary-navigation li:hover > .sub-menu, .primary-navigation li:focus-within > .sub-menu { visibility: visible; }
-	.header-booking { order: 3; flex: 0 1 auto; margin-left: 0; }
+	.header-contact { order: 3; flex: 0 0 auto; gap: 1rem; }
+	.header-booking { order: 4; flex: 0 1 auto; margin-left: 0; }
 	.hero h1 { font-size: 6.25rem; }
 	.hero__content { padding-top: max(11rem, calc(var(--spridisi-header-height, 7rem) + 3rem)); }
 	.hero__eyebrow { margin-bottom: 2.5rem; }

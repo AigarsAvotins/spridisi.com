@@ -20,7 +20,6 @@
 			<?php if ( ! $email && ! $phone && ! $address ) : ?><p class="footer-pending"><?php esc_html_e( 'Kontaktinformācija tiks papildināta.', 'spridisi' ); ?></p><?php endif; ?>
 			<?php endif; ?>
 		</div>
-		<nav class="footer-navigation" aria-label="<?php esc_attr_e( 'Kājenes navigācija', 'spridisi' ); ?>"><h2 class="eyebrow"><?php esc_html_e( 'SPRĪDĪŠOS', 'spridisi' ); ?></h2><?php wp_nav_menu( array( 'theme_location' => 'footer', 'container' => false, 'fallback_cb' => 'spridisi_default_menu', 'depth' => 1 ) ); ?></nav>
 		<div class="footer-social"><h2 class="eyebrow"><?php esc_html_e( 'SEKO LĪDZI', 'spridisi' ); ?></h2>
 			<?php $has_social = false; foreach ( array( 'instagram' => __( 'Instagram', 'spridisi' ), 'facebook' => __( 'Facebook', 'spridisi' ) ) as $network => $label ) : $social_url = get_theme_mod( 'spridisi_' . $network, $contact_defaults[ $network ] ); ?>
 				<?php if ( $social_url ) : $has_social = true; ?><a href="<?php echo esc_url( $social_url ); ?>"><?php echo esc_html( $label ); ?><span aria-hidden="true"> ↗</span></a><?php endif; ?>
