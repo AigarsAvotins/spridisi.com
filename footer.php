@@ -69,7 +69,7 @@ if ( $show_reviews ) :
 						<h3><?php echo esc_html( $review_source['label'] ); ?></h3>
 						<?php if ( trim( (string) $review_source['rating'] ) ) : ?><p class="footer-review-score"><strong><?php echo esc_html( $review_source['rating'] ); ?></strong><span> / <?php echo esc_html( $review_source['scale'] ); ?></span></p><?php endif; ?>
 						<?php if ( $review_source['count'] ) : ?><p class="footer-review-count"><?php printf( esc_html( _n( '%s atsauksme', '%s atsauksmes', $review_source['count'], 'spridisi' ) ), esc_html( number_format_i18n( $review_source['count'] ) ) ); ?></p><?php endif; ?>
-						<?php if ( trim( (string) $review_source['reviews'] ) ) : ?><div class="footer-review-excerpts"><?php echo nl2br( esc_html( $review_source['reviews'] ) ); ?></div><?php endif; ?>
+						<?php if ( trim( (string) $review_source['reviews'] ) ) : ?><div class="footer-review-excerpts"><?php foreach ( preg_split( '/\r\n|\r|\n/', trim( $review_source['reviews'] ) ) as $review_line ) : ?><p><?php echo esc_html( $review_line ); ?></p><?php endforeach; ?></div><?php endif; ?>
 						<a class="footer-review-link" href="<?php echo esc_url( $review_source['url'] ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Skatīt atsauksmes', 'spridisi' ); ?><span aria-hidden="true"> ↗</span></a>
 					</article>
 				<?php endforeach; ?>

@@ -85,9 +85,9 @@ function spridisi_default_contact_details() {
 
 function spridisi_default_review_details() {
 	return array(
-		'google_rating' => '',
-		'google_review_count' => '',
-		'google_reviews' => '',
+		'google_rating' => '4.9',
+		'google_review_count' => '28',
+		'google_reviews' => "Kristīne Buče · 5/5 · pirms 3 mēnešiem\nMāris Dubinskis · 5/5 · pirms 5 mēnešiem · izceļ viesmīlīgos saimniekus.\nArmands Skrējāns · 5/5 · pirms 6 mēnešiem",
 		'booking_rating' => '9.2',
 		'booking_review_count' => '11',
 		'booking_reviews' => '',
@@ -130,7 +130,7 @@ function spridisi_customize_register( $wp_customize ) {
 	$review_fields = array(
 		'google_rating' => array( __( 'Google overall rating (out of 5)', 'spridisi' ), 'text', 'sanitize_text_field' ),
 		'google_review_count' => array( __( 'Google review count', 'spridisi' ), 'number', 'absint' ),
-		'google_reviews' => array( __( 'Google review excerpts (one per paragraph)', 'spridisi' ), 'textarea', 'sanitize_textarea_field' ),
+		'google_reviews' => array( __( 'Google latest reviews (one per line)', 'spridisi' ), 'textarea', 'sanitize_textarea_field' ),
 		'booking_rating' => array( __( 'Booking.com overall rating (out of 10)', 'spridisi' ), 'text', 'sanitize_text_field' ),
 		'booking_review_count' => array( __( 'Booking.com review count', 'spridisi' ), 'number', 'absint' ),
 		'booking_reviews' => array( __( 'Booking.com review excerpts (one per paragraph)', 'spridisi' ), 'textarea', 'sanitize_textarea_field' ),

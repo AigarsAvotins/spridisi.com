@@ -134,9 +134,9 @@ provided. Existing Customizer contact values remain backward-compatible fallback
 
 Manual review scores and excerpts are managed under **Appearance > Customize >
 Sprīdīši: reviews**. Booking.com defaults to the publicly displayed 9.2/10 from 11
-reviews observed on 2026-11-22. Google values and review excerpts start blank and
-must be entered from verified current sources; no review text is fetched or
-invented automatically. Each provider has a URL link to its public review page.
+reviews observed on 2026-11-22. Google Maps defaults to 4.9/5 from 28 reviews and
+three newest visible entries manually checked on 2026-11-22. Review text is not
+fetched automatically. Each provider has a URL link to its public review page.
 
 Content-only locks protect section order and layout. The homepage's code editor
 and lock controls are disabled. The owner edits content; structural layout changes
