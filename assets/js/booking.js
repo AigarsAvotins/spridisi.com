@@ -22,9 +22,7 @@
 		other.disabled = !required;
 		form.querySelector('.request-other').hidden = !required;
 		const staying = spaces.some(field => field.checked && field.value === 'stay');
-		overnight.disabled = !staying;
 		overnight.required = staying;
-		overnight.closest('.request-field').hidden = !staying;
 		end.min = start.value && start.value > form.dataset.today ? start.value : form.dataset.today;
 		updateEstimate();
 	};
@@ -37,7 +35,9 @@
 		const sauna = spaces.some(field => field.checked && field.value === 'sauna');
 		const hasHall = smallHall || largeHall;
 		const staying = spaces.some(field => field.checked && field.value === 'stay');
-		if (!event.value || !Number.isInteger(guestCount) || guestCount < 1 || (!hasHall && !staying && !sauna) || (staying && !/^(0|[1-9]\d*)$/.test(overnight.value))) {
+		const overnightValid = /^(0|[1-9]\d*)$/.test(overnight.value);
+		const overnightCount = overnightValid ? Number.parseInt(overnight.value, 10) : 0;
+		if (!event.value || !Number.isInteger(guestCount) || guestCount < 1 || (!hasHall && !staying && !sauna) || (staying && !overnightValid) || (overnightCount > 0 && !staying)) {
 			estimate.hidden = true;
 			return;
 		}
@@ -60,7 +60,6 @@
 			estimate.hidden = true;
 			return;
 		}
-		const overnightCount = staying ? Number.parseInt(overnight.value, 10) || 0 : 0;
 		const total = hallPrice + (sauna ? prices.sauna : 0) + overnightCount * prices.overnight;
 		estimate.hidden = false;
 		estimateAmount.textContent = `${new Intl.NumberFormat(document.documentElement.lang || 'lv-LV').format(total)} EUR`;
@@ -79,7 +78,9 @@
 		if (start.value && end.value && end.value < start.value) end.setCustomValidity(spridisiRequest.end);
 		if (form.elements.guests.value && !/^[1-9]\d*$/.test(form.elements.guests.value)) form.elements.guests.setCustomValidity(spridisiRequest.guests);
 		if (overnight.value && !/^(0|[1-9]\d*)$/.test(overnight.value)) overnight.setCustomValidity(spridisiRequest.overnightGuests);
-		if (!overnight.disabled && !overnight.value) overnight.setCustomValidity(spridisiRequest.overnightRequired);
+		const staying = spaces.some(field => field.checked && field.value === 'stay');
+		if (staying && !overnight.value) overnight.setCustomValidity(spridisiRequest.overnightRequired);
+		if (Number.parseInt(overnight.value, 10) > 0 && !staying) overnight.setCustomValidity(spridisiRequest.overnightStay);
 		if (!spaces.some(field => field.checked)) spaces[0].setCustomValidity(spridisiRequest.spaces);
 	};
 	form.addEventListener('change', () => { synchronize(); validate(); });
