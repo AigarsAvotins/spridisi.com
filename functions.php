@@ -71,6 +71,7 @@ add_action( 'wp_enqueue_scripts', 'spridisi_enqueue_assets' );
 require_once get_theme_file_path( '/inc/homepage-content.php' );
 require_once get_theme_file_path( '/inc/gallery.php' );
 require_once get_theme_file_path( '/inc/booking.php' );
+require_once get_theme_file_path( '/inc/history-migration.php' );
 
 function spridisi_customize_register( $wp_customize ) {
 	$wp_customize->add_section( 'spridisi_homepage', array( 'title' => __( 'Sprīdīši: homepage', 'spridisi' ), 'priority' => 30 ) );

@@ -134,6 +134,7 @@ h3 { font-size: 1.75rem; }
 .timeline .eyebrow { display: block; margin-bottom: 1.5rem; color: #6d5943; }
 .timeline h3 { margin-bottom: 0.75rem; }
 .timeline p { margin-bottom: 0; font-size: 0.875rem; color: #576153; }
+.timeline .timeline__description img { display: block; max-width: 100%; height: auto; margin-block: 1rem; }
 .history__action { text-align: center; }
 .gallery-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 .gallery__image { aspect-ratio: 0.85; }
