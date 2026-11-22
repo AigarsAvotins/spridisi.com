@@ -67,8 +67,14 @@ stored.
   five attempts per rolling fifteen-minute window keyed by an HMAC of REMOTE_ADDR.
   Raw IP addresses are not stored. Client-controlled proxy headers are not trusted;
   configure the web server correctly behind a trusted proxy. Rate limiting is basic
-  defense, not a replacement for monitored abuse prevention. Turnstile can be added
-  server-side later if needed, without trusting client assertions.
+  defense, not a replacement for monitored abuse prevention. Cloudflare Turnstile
+  is checked server-side; client assertions are never trusted. The form fails closed
+  until both keys are configured.
+- Create a Turnstile widget for the production and staging hostnames in Cloudflare,
+  then define `SPRIDISI_TURNSTILE_SITE_KEY` and `SPRIDISI_TURNSTILE_SECRET_KEY` in
+  `wp-config.php` (or the host's environment configuration). Never commit the secret
+  or put it in Customizer settings. The public site key is rendered only when both
+  keys are present.
 - An atomic, non-autoloaded WordPress option claims each random token before mail is
   sent. It stores only pending/sent status; WordPress cron removes it after two hours.
   Rate-limit transients contain counters only. These are anti-abuse metadata, not

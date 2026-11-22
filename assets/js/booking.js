@@ -100,6 +100,19 @@
 			form.reportValidity();
 			return;
 		}
+		if (spridisiRequest.turnstileConfigured) {
+			const challengeResponse = form.querySelector('input[name="cf-turnstile-response"]');
+			const challengeError = form.querySelector('#request-turnstile-error');
+			if (!challengeResponse?.value) {
+				eventObject.preventDefault();
+				if (challengeError) {
+					challengeError.textContent = spridisiRequest.turnstileRequired;
+					challengeError.hidden = false;
+				}
+				return;
+			}
+			if (challengeError) challengeError.hidden = true;
+		}
 		submit.disabled = true;
 		submit.textContent = spridisiRequest.sending;
 	});

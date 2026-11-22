@@ -46,6 +46,33 @@ function spridisi_request_error_message() {
 	return __( 'Pieprasījumu neizdevās nosūtīt. Lūdzu, pārbaudi ievadīto informāciju un mēģini vēlreiz.', 'spridisi' );
 }
 
+function spridisi_request_turnstile_configured() {
+	return defined( 'SPRIDISI_TURNSTILE_SITE_KEY' ) && is_string( SPRIDISI_TURNSTILE_SITE_KEY ) && '' !== trim( SPRIDISI_TURNSTILE_SITE_KEY ) && defined( 'SPRIDISI_TURNSTILE_SECRET_KEY' ) && is_string( SPRIDISI_TURNSTILE_SECRET_KEY ) && '' !== trim( SPRIDISI_TURNSTILE_SECRET_KEY );
+}
+
+function spridisi_request_turnstile_verify( $input ) {
+	if ( ! spridisi_request_turnstile_configured() ) {
+		return false;
+	}
+	$token = spridisi_request_input( $input, 'cf-turnstile-response' );
+	if ( '' === $token ) {
+		return false;
+	}
+	$response = wp_remote_post( 'https://challenges.cloudflare.com/turnstile/v0/siteverify', array(
+		'timeout' => 10,
+		'body' => array(
+			'secret' => SPRIDISI_TURNSTILE_SECRET_KEY,
+			'response' => $token,
+		),
+	) );
+	if ( is_wp_error( $response ) || 200 !== wp_remote_retrieve_response_code( $response ) ) {
+		return false;
+	}
+	$result = json_decode( wp_remote_retrieve_body( $response ), true );
+	$hostname = strtolower( (string) ( wp_parse_url( home_url( '/' ), PHP_URL_HOST ) ?? '' ) );
+	return is_array( $result ) && ! empty( $result['success'] ) && 'reservation' === ( $result['action'] ?? '' ) && $hostname === strtolower( (string) ( $result['hostname'] ?? '' ) );
+}
+
 function spridisi_request_input( $input, $key, $textarea = false ) {
 	$value = isset( $input[ $key ] ) && is_string( $input[ $key ] ) ? trim( $input[ $key ] ) : '';
 	return $textarea ? sanitize_textarea_field( $value ) : sanitize_text_field( $value );
@@ -257,6 +284,10 @@ function spridisi_request_process( $input, $page_id ) {
 	if ( $state['errors'] ) {
 		return $state;
 	}
+	if ( ! spridisi_request_turnstile_verify( $input ) ) {
+		$state['errors']['form'] = __( 'Lūdzu, pabeidz drošības pārbaudi un mēģini vēlreiz.', 'spridisi' );
+		return $state;
+	}
 	if ( ! add_option( $key, 'pending', '', false ) ) {
 		$state['errors']['form'] = spridisi_request_error_message();
 		return $state;
@@ -434,7 +465,13 @@ function spridisi_request_form() {
 	if ( isset( $errors['consent'] ) ) {
 		echo '<p class="request-error" id="request-consent-error">' . esc_html( $errors['consent'] ) . '</p>';
 	}
-	echo '</div><button class="button request-submit" type="submit">' . esc_html__( 'Nosūtīt', 'spridisi' ) . '</button></form>';
+	echo '</div>';
+	if ( spridisi_request_turnstile_configured() ) {
+		echo '<div class="request-verification"><div class="cf-turnstile" data-sitekey="' . esc_attr( SPRIDISI_TURNSTILE_SITE_KEY ) . '" data-action="reservation" data-language="lv"></div><p id="request-turnstile-error" class="request-error" role="alert" hidden></p></div>';
+	} else {
+		echo '<p class="request-verification-notice" role="status">' . esc_html__( 'Drošības pārbaude vēl nav konfigurēta. Lūdzu, sazinies ar mums pa tālruni vai WhatsApp.', 'spridisi' ) . '</p>';
+	}
+	echo '<button class="button request-submit" type="submit"' . ( spridisi_request_turnstile_configured() ? '' : ' disabled' ) . '>' . esc_html__( 'Nosūtīt', 'spridisi' ) . '</button></form>';
 }
 
 function spridisi_request_page_content() {
@@ -535,6 +572,9 @@ function spridisi_request_assets() {
 	}
 	wp_enqueue_style( 'spridisi-booking', get_theme_file_uri( '/assets/css/booking.css' ), array( 'spridisi-main' ), (string) filemtime( get_theme_file_path( '/assets/css/booking.css' ) ) );
 	wp_enqueue_script( 'spridisi-booking', get_theme_file_uri( '/assets/js/booking.js' ), array(), (string) filemtime( get_theme_file_path( '/assets/js/booking.js' ) ), array( 'strategy' => 'defer', 'in_footer' => true ) );
+	if ( spridisi_request_turnstile_configured() ) {
+		wp_enqueue_script( 'spridisi-turnstile', 'https://challenges.cloudflare.com/turnstile/v0/api.js', array(), null, array( 'strategy' => 'async', 'in_footer' => true ) );
+	}
 	wp_localize_script( 'spridisi-booking', 'spridisiRequest', array(
 		'required' => __( 'Lūdzu, aizpildi šo lauku.', 'spridisi' ),
 		'email' => __( 'Norādi derīgu e-pasta adresi.', 'spridisi' ),
@@ -545,6 +585,8 @@ function spridisi_request_assets() {
 		'overnightGuests' => __( 'Norādi veselu nakšņotāju skaitu no 0 līdz 40.', 'spridisi' ),
 		'overnightRequired' => __( 'Norādi nakšņotāju skaitu.', 'spridisi' ),
 		'overnightStay' => __( 'Lai norādītu nakšņotāju skaitu, izvēlies nakšņošanu.', 'spridisi' ),
+		'turnstileConfigured' => spridisi_request_turnstile_configured(),
+		'turnstileRequired' => __( 'Lūdzu, pabeidz drošības pārbaudi.', 'spridisi' ),
 		'spaces' => __( 'Izvēlies vismaz vienu telpu vai piedāvājumu.', 'spridisi' ),
 		'prices' => array( 'smallHall' => array( 'upTo15' => 150, 'upTo25' => 180 ), 'largeHall' => array( 'upTo30' => 250, 'upTo40' => 300, 'over40' => 350 ), 'wedding' => 400, 'sauna' => 80, 'overnight' => 12 ),
 		'sending' => __( 'Nosūta…', 'spridisi' ),

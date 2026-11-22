@@ -25,6 +25,9 @@
 .request-estimate p:last-child { margin-bottom: 0; }
 .request-estimate-total { font-size: 1.125rem; }
 .request-estimate-total output { font-weight: 700; }
+.request-verification { margin-block: 1.5rem; }
+.request-verification .cf-turnstile { min-height: 65px; }
+.request-verification-notice { margin-block: 1.5rem; padding-left: 1rem; border-left: 3px solid var(--copper); color: #576153; }
 .request-error { margin: 0.5rem 0 0; color: #8c2822; font-size: 0.875rem; }
 .request-status { margin-bottom: 2rem; padding: 1.5rem; border: 1px solid var(--forest); }
 .request-status h2 { font-size: 1.75rem; line-height: 1.3; }
