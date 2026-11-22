@@ -243,3 +243,103 @@ function spridisi_import_history() {
 	exit;
 }
 add_action( 'admin_post_spridisi_import_history', 'spridisi_import_history' );
+
+function spridisi_history_render_timeline( $entries, $list_id, $label ) {
+	if ( ! $entries ) {
+		return;
+	}
+	echo '<ol id="' . esc_attr( $list_id ) . '" class="timeline" aria-label="' . esc_attr( $label ) . '">';
+	foreach ( $entries as $entry ) {
+		echo '<li><span class="timeline__marker" aria-hidden="true"></span>';
+		if ( trim( $entry->post_excerpt ) ) {
+			echo '<span class="eyebrow">' . esc_html( wp_strip_all_tags( $entry->post_excerpt ) ) . '</span>';
+		}
+		echo '<h3>' . esc_html( get_the_title( $entry ) ) . '</h3><div class="timeline__description"><div class="timeline__description-content">';
+		spridisi_page_content( $entry );
+		echo '</div><button class="timeline__expand" type="button" aria-expanded="false" data-more="' . esc_attr__( 'Rādīt vairāk', 'spridisi' ) . '" data-less="' . esc_attr__( 'Rādīt mazāk', 'spridisi' ) . '" hidden>' . esc_html__( 'Rādīt vairāk', 'spridisi' ) . '</button></div></li>';
+	}
+	echo '</ol>';
+}
+
+function spridisi_history_featured_entries( $entries, $limit = 3 ) {
+	$selected = array();
+	$remaining = array();
+	foreach ( $entries as $entry ) {
+		if ( '1' === get_post_meta( $entry->ID, '_spridisi_history_featured', true ) ) {
+			$selected[] = $entry;
+		} else {
+			$remaining[] = $entry;
+		}
+	}
+	return array_slice( array_merge( $selected, $remaining ), 0, $limit );
+}
+
+function spridisi_history_entry_meta_box( $post ) {
+	$parent = $post instanceof WP_Post ? get_post( $post->post_parent ) : null;
+	if ( ! $parent || ! get_post_meta( $parent->ID, '_spridisi_history_source_id', true ) ) {
+		return;
+	}
+	add_meta_box( 'spridisi-history-featured', __( 'Vēstures izcēlums', 'spridisi' ), 'spridisi_history_entry_meta_box_content', 'page', 'side', 'default' );
+}
+add_action( 'add_meta_boxes_page', 'spridisi_history_entry_meta_box' );
+
+function spridisi_history_entry_meta_box_content( $post ) {
+	wp_nonce_field( 'spridisi_history_featured_' . $post->ID, 'spridisi_history_featured_nonce' );
+	$checked = '1' === get_post_meta( $post->ID, '_spridisi_history_featured', true );
+	echo '<label><input type="checkbox" name="spridisi_history_featured" value="1"' . checked( $checked, true, false ) . '> ' . esc_html__( 'Rādīt sākumlapā starp trim faktiem', 'spridisi' ) . '</label>';
+	echo '<p class="description">' . esc_html__( 'Sākumlapā var izcelt ne vairāk kā trīs ierakstus.', 'spridisi' ) . '</p>';
+}
+
+function spridisi_history_entry_save_featured( $post_id, $post ) {
+	if ( wp_is_post_autosave( $post_id ) || wp_is_post_revision( $post_id ) || ! current_user_can( 'edit_post', $post_id ) || ! isset( $_POST['spridisi_history_featured_nonce'] ) ) {
+		return;
+	}
+	$nonce = sanitize_text_field( wp_unslash( $_POST['spridisi_history_featured_nonce'] ) );
+	if ( ! wp_verify_nonce( $nonce, 'spridisi_history_featured_' . $post_id ) ) {
+		return;
+	}
+	$parent = get_post( $post->post_parent );
+	if ( ! $parent || ! get_post_meta( $parent->ID, '_spridisi_history_source_id', true ) ) {
+		return;
+	}
+	if ( isset( $_POST['spridisi_history_featured'] ) ) {
+		$selected_ids = get_posts( array(
+			'post_type' => 'page',
+			'post_status' => array( 'publish', 'private', 'draft', 'pending' ),
+			'post_parent' => $parent->ID,
+			'meta_key' => '_spridisi_history_featured',
+			'meta_value' => '1',
+			'numberposts' => 4,
+			'fields' => 'ids',
+		) );
+		$other_selected = array_filter( $selected_ids, static function ( $selected_id ) use ( $post_id ) {
+			return (int) $selected_id !== (int) $post_id;
+		} );
+		if ( count( $other_selected ) >= 3 ) {
+			set_transient( 'spridisi_history_featured_limit_' . get_current_user_id(), true, MINUTE_IN_SECONDS );
+			return;
+		}
+		update_post_meta( $post_id, '_spridisi_history_featured', '1' );
+	} else {
+		delete_post_meta( $post_id, '_spridisi_history_featured' );
+	}
+}
+add_action( 'save_post_page', 'spridisi_history_entry_save_featured', 10, 2 );
+
+function spridisi_history_featured_limit_notice() {
+	$key = 'spridisi_history_featured_limit_' . get_current_user_id();
+	if ( get_transient( $key ) ) {
+		delete_transient( $key );
+		echo '<div class="notice notice-error"><p>' . esc_html__( 'Sākumlapā var izcelt ne vairāk kā trīs vēstures faktus. Noņem atzīmi kādam citam ierakstam un mēģini vēlreiz.', 'spridisi' ) . '</p></div>';
+	}
+}
+add_action( 'admin_notices', 'spridisi_history_featured_limit_notice' );
+
+function spridisi_history_archive_template( $template ) {
+	if ( ! is_page() || ! get_post_meta( get_queried_object_id(), '_spridisi_history_import_state', true ) ) {
+		return $template;
+	}
+	$archive_template = get_theme_file_path( '/page-templates/history-archive.php' );
+	return file_exists( $archive_template ) ? $archive_template : $template;
+}
+add_filter( 'template_include', 'spridisi_history_archive_template', 99 );

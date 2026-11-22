@@ -61,6 +61,31 @@
 		updateHeader();
 	}
 
+	document.querySelectorAll('.timeline__description').forEach((description) => {
+		const content = description.querySelector('.timeline__description-content');
+		const button = description.querySelector('.timeline__expand');
+		if (!content || !button) return;
+		const collapsedClass = 'timeline__description-content--collapsed';
+		const measure = () => {
+			if (button.getAttribute('aria-expanded') === 'true') return;
+			content.classList.add(collapsedClass);
+			const overflowed = content.scrollHeight > content.clientHeight + 1;
+			button.hidden = !overflowed;
+			if (!overflowed) content.classList.remove(collapsedClass);
+		};
+		button.addEventListener('click', () => {
+			const expanded = button.getAttribute('aria-expanded') !== 'true';
+			button.setAttribute('aria-expanded', String(expanded));
+			content.classList.toggle(collapsedClass, !expanded);
+			button.textContent = expanded ? button.dataset.less : button.dataset.more;
+		});
+		measure();
+		if ('ResizeObserver' in window) {
+			const observer = new ResizeObserver(measure);
+			observer.observe(content);
+		}
+	});
+
 	document.addEventListener('click', (event) => {
 		const link = event.target.closest('a[href]');
 		if (!link || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || link.target || link.hasAttribute('download')) return;

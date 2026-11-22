@@ -138,6 +138,10 @@ beside the front page when the source is hosted separately. The source page and 
 are preserved; each dated heading becomes an ordered child page, retaining its HTML,
 images, and source links. The migration is nonce- and capability-protected,
 idempotent, and skips existing unrelated timeline entries.
+Each imported history entry has a **Vēstures izcēlums** checkbox in its page editor;
+select up to three to feature on the homepage. If none are selected, the first three
+entries are shown. The homepage button opens the full local archive. Long entries
+collapse at roughly ten lines and can be expanded in place.
 
 Translate the actual homepage page with Polylang/WPML later. Each translated page
 stores its own native text/button/image blocks with the same stable structural

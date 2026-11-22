@@ -127,6 +127,9 @@ h3 { font-size: 1.75rem; }
 .history__intro .section-kicker { justify-content: center; }
 .history h2 { max-width: 9ch; margin-inline: auto; }
 .history__subtitle { margin-bottom: 0; color: #576153; }
+.history-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin: 2rem 0; padding: 0; list-style: none; text-align: left; }
+.history-facts li { padding-top: 0.75rem; border-top: 1px solid #a1a48e; font-size: 0.8125rem; color: #576153; }
+.history-facts strong { display: block; color: var(--ink); font-family: var(--serif); font-size: 1.5rem; font-weight: 400; }
 .timeline { display: grid; gap: 0; margin: 3.5rem 0 2.5rem; padding: 0; list-style: none; scroll-margin-top: 2rem; }
 .timeline li { position: relative; padding: 0 0 2.5rem 2rem; border-left: 1px solid #a1a48e; }
 .timeline li:last-child { padding-bottom: 0; }
@@ -135,6 +138,14 @@ h3 { font-size: 1.75rem; }
 .timeline h3 { margin-bottom: 0.75rem; }
 .timeline p { margin-bottom: 0; font-size: 0.875rem; color: #576153; }
 .timeline .timeline__description img { display: block; max-width: 100%; height: auto; margin-block: 1rem; }
+.timeline__description-content--collapsed { max-height: 15em; overflow: hidden; }
+.timeline__expand { margin-top: 0.75rem; padding: 0.25rem 0; border: 0; border-bottom: 1px solid #9a9d8e; color: var(--forest); background: transparent; font: inherit; cursor: pointer; }
+.timeline__expand:hover { border-bottom-color: currentColor; }
+.history:not(.history-archive) .timeline__description-content img { display: none; }
+.history-archive__intro { max-width: 54rem; padding-block: 3rem 1rem; text-align: center; }
+.history-archive__intro .section-kicker { justify-content: center; }
+.history-archive__intro h1 { margin-inline: auto; }
+.history-archive__facts { text-align: left; }
 .history__action { text-align: center; }
 .gallery-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 .gallery__image { aspect-ratio: 0.85; }
@@ -216,6 +227,7 @@ h3 { font-size: 1.75rem; }
 	.experience-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem; }
 	.experience:nth-child(2) { margin-top: 3.5rem; }
 	.experience:nth-child(3) { margin-top: 7rem; }
+	.history-facts { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 	.timeline { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-block: 5rem 3rem; }
 	.timeline li { border-top: 1px solid #a1a48e; border-left: 0; padding: 2.5rem 2rem 0 0; }
 	.timeline__marker { top: -0.3rem; left: 0; }
