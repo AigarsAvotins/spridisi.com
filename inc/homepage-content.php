@@ -470,7 +470,9 @@ function spridisi_homepage_hall_images_notice() {
 		return;
 	}
 	$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
-	if ( ! $screen || 'edit-page' !== $screen->id ) {
+	$homepage_id = absint( get_option( 'page_on_front' ) );
+	$is_homepage_editor = $screen && 'page' === $screen->id && isset( $_GET['post'] ) && $homepage_id === absint( $_GET['post'] );
+	if ( ! $screen || ( 'edit-page' !== $screen->id && ! $is_homepage_editor ) ) {
 		return;
 	}
 	$sections = spridisi_homepage_sections();
