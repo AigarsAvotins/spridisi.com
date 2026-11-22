@@ -73,6 +73,16 @@ require_once get_theme_file_path( '/inc/gallery.php' );
 require_once get_theme_file_path( '/inc/booking.php' );
 require_once get_theme_file_path( '/inc/history-migration.php' );
 
+function spridisi_default_contact_details() {
+	return array(
+		'email' => 'info@spridisi.com',
+		'phone' => '+371 26344495',
+		'address' => 'Sprīdīši, Sēlpils pagasts, Jēkabpils novads, LV-5232',
+	'instagram' => 'https://instagram.com/spridisi',
+	'facebook' => 'https://facebook.com/teirtalaimeszeme',
+	);
+}
+
 function spridisi_customize_register( $wp_customize ) {
 	$wp_customize->add_section( 'spridisi_homepage', array( 'title' => __( 'Sprīdīši: homepage', 'spridisi' ), 'priority' => 30 ) );
 	$images = array(
@@ -91,16 +101,17 @@ function spridisi_customize_register( $wp_customize ) {
 		$wp_customize->add_setting( 'spridisi_image_' . $key, array( 'default' => 0, 'sanitize_callback' => 'absint' ) );
 		$wp_customize->add_control( new WP_Customize_Media_Control( $wp_customize, 'spridisi_image_' . $key, array( 'label' => $label, 'section' => 'spridisi_homepage', 'mime_type' => 'image' ) ) );
 	}
+	$defaults = spridisi_default_contact_details();
 	$fields = array(
-		'email'       => array( __( 'Booking email', 'spridisi' ), 'email', 'sanitize_email' ),
-		'phone'       => array( __( 'Phone', 'spridisi' ), 'text', 'sanitize_text_field' ),
-		'address'     => array( __( 'Address', 'spridisi' ), 'text', 'sanitize_text_field' ),
-		'booking_url' => array( __( 'Booking URL (optional; overrides email)', 'spridisi' ), 'url', 'esc_url_raw' ),
-		'instagram'   => array( __( 'Instagram URL', 'spridisi' ), 'url', 'esc_url_raw' ),
-		'facebook'    => array( __( 'Facebook URL', 'spridisi' ), 'url', 'esc_url_raw' ),
+		'email'       => array( __( 'Booking email', 'spridisi' ), 'email', 'sanitize_email', $defaults['email'] ),
+		'phone'       => array( __( 'Phone', 'spridisi' ), 'text', 'sanitize_text_field', $defaults['phone'] ),
+		'address'     => array( __( 'Address', 'spridisi' ), 'text', 'sanitize_text_field', $defaults['address'] ),
+		'booking_url' => array( __( 'Booking URL (optional; overrides reservation page)', 'spridisi' ), 'url', 'esc_url_raw', '' ),
+		'instagram'   => array( __( 'Instagram URL', 'spridisi' ), 'url', 'esc_url_raw', $defaults['instagram'] ),
+		'facebook'    => array( __( 'Facebook URL', 'spridisi' ), 'url', 'esc_url_raw', $defaults['facebook'] ),
 	);
 	foreach ( $fields as $key => $field ) {
-		$wp_customize->add_setting( 'spridisi_' . $key, array( 'default' => '', 'sanitize_callback' => $field[2] ) );
+		$wp_customize->add_setting( 'spridisi_' . $key, array( 'default' => $field[3], 'sanitize_callback' => $field[2] ) );
 		$wp_customize->add_control( 'spridisi_' . $key, array( 'label' => $field[0], 'section' => 'spridisi_homepage', 'type' => $field[1] ) );
 	}
 	$wp_customize->add_setting( 'spridisi_history_page', array( 'default' => 0, 'sanitize_callback' => 'absint' ) );
@@ -166,9 +177,10 @@ function spridisi_booking_url() {
 	if ( null !== spridisi_homepage_field( 'contact', 'primary' ) ) {
 		return spridisi_reservation_link( spridisi_homepage_link( 'contact', 'primary' ) );
 	}
+	$defaults = spridisi_default_contact_details();
 	$url   = get_theme_mod( 'spridisi_booking_url', '' );
-	$email = sanitize_email( get_theme_mod( 'spridisi_email', '' ) );
-	return $url ? $url : ( $email ? 'mailto:' . $email : spridisi_reservation_link() );
+	$email = sanitize_email( get_theme_mod( 'spridisi_email', $defaults['email'] ) );
+	return $url ? $url : ( spridisi_reservation_link() ?: ( $email ? 'mailto:' . $email : '' ) );
 }
 
 function spridisi_content_children( $parent_id ) {

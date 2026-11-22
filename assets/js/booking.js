@@ -40,7 +40,7 @@
 		const staying = spaces.some(field => field.checked && field.value === 'stay');
 		const overnightValid = /^(0|[1-9]\d*)$/.test(overnight.value);
 		const overnightCount = overnightValid ? Number.parseInt(overnight.value, 10) : 0;
-		if (!event.value || !Number.isInteger(guestCount) || guestCount < 1 || (!hasHall && !staying && !sauna) || (staying && !overnightValid) || (overnightCount > 0 && !staying)) {
+		if (!event.value || (hasHall && (!Number.isInteger(guestCount) || guestCount < 1)) || (!hasHall && !staying && !sauna) || (staying && !overnightValid) || (overnightCount > 0 && !staying)) {
 			estimate.hidden = true;
 			return;
 		}
@@ -80,7 +80,7 @@
 		if (start.value && start.value < form.dataset.today) start.setCustomValidity(spridisiRequest.past);
 		if (start.value && end.value && end.value < start.value) end.setCustomValidity(spridisiRequest.end);
 		if (form.elements.guests.value && !/^[1-9]\d*$/.test(form.elements.guests.value)) form.elements.guests.setCustomValidity(spridisiRequest.guests);
-		if (overnight.value && !/^(0|[1-9]\d*)$/.test(overnight.value)) overnight.setCustomValidity(spridisiRequest.overnightGuests);
+		if (overnight.value && (!/^(0|[1-9]\d*)$/.test(overnight.value) || Number.parseInt(overnight.value, 10) > 40)) overnight.setCustomValidity(spridisiRequest.overnightGuests);
 		const staying = spaces.some(field => field.checked && field.value === 'stay');
 		if (staying && !overnight.value) overnight.setCustomValidity(spridisiRequest.overnightRequired);
 		if (Number.parseInt(overnight.value, 10) > 0 && !staying) overnight.setCustomValidity(spridisiRequest.overnightStay);

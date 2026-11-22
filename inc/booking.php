@@ -92,8 +92,8 @@ function spridisi_request_validate( $input ) {
 	if ( false === filter_var( $data['guests'], FILTER_VALIDATE_INT, array( 'options' => array( 'min_range' => 1 ) ) ) ) {
 		$errors['guests'] = __( 'Norādi veselu viesu skaitu, kas nav mazāks par 1.', 'spridisi' );
 	}
-	if ( '' !== $data['overnight_guests'] && false === filter_var( $data['overnight_guests'], FILTER_VALIDATE_INT, array( 'options' => array( 'min_range' => 0 ) ) ) ) {
-		$errors['overnight_guests'] = __( 'Norādi veselu nakšņotāju skaitu, kas nav mazāks par 0.', 'spridisi' );
+	if ( '' !== $data['overnight_guests'] && false === filter_var( $data['overnight_guests'], FILTER_VALIDATE_INT, array( 'options' => array( 'min_range' => 0, 'max_range' => 40 ) ) ) ) {
+		$errors['overnight_guests'] = __( 'Norādi veselu nakšņotāju skaitu no 0 līdz 40.', 'spridisi' );
 	}
 	if ( in_array( 'stay', $data['spaces'], true ) && '' === $data['overnight_guests'] ) {
 		$errors['overnight_guests'] = __( 'Norādi nakšņotāju skaitu.', 'spridisi' );
@@ -392,7 +392,7 @@ function spridisi_request_form() {
 	echo '<div class="request-other">';
 	spridisi_request_field( 'event_other', __( 'Norādi pasākuma veidu', 'spridisi' ), 'text', false, array( 'maxlength' => 200 ), __( 'Jāaizpilda, ja izvēlēts pasākuma veids “Cits”.', 'spridisi' ) );
 	echo '</div></fieldset><fieldset id="request-spaces" tabindex="-1"' . ( isset( $errors['spaces'] ) ? ' aria-describedby="request-spaces-error" aria-invalid="true"' : '' ) . '><legend>' . esc_html__( 'Vēlamā telpa vai piedāvājums', 'spridisi' ) . ' <span class="request-required">' . esc_html__( '(obligāti)', 'spridisi' ) . '</span></legend>';
-	$hints = array( 'large_hall' => __( '220 m², līdz 80 viesiem.', 'spridisi' ), 'small_hall' => __( '50 m², piemērota aptuveni 10–15 cilvēkiem.', 'spridisi' ), 'stay' => __( 'līdz 28 viesiem.', 'spridisi' ) );
+	$hints = array( 'large_hall' => __( '220 m², līdz 80 viesiem.', 'spridisi' ), 'small_hall' => __( '50 m², piemērota aptuveni 10–15 cilvēkiem.', 'spridisi' ), 'stay' => __( 'līdz 40 viesiem.', 'spridisi' ) );
 	foreach ( spridisi_request_spaces() as $key => $label ) {
 		$id = 'request-space-' . $key;
 		echo '<label class="request-choice" for="' . esc_attr( $id ) . '"><input type="checkbox" id="' . esc_attr( $id ) . '" name="spaces[]" value="' . esc_attr( $key ) . '"' . checked( in_array( $key, $values['spaces'] ?? array(), true ), true, false ) . '><span>' . esc_html( $label );
@@ -402,7 +402,7 @@ function spridisi_request_form() {
 		echo '</span></label>';
 		if ( 'stay' === $key ) {
 			echo '<div class="request-overnight-field"' . ( in_array( 'stay', $values['spaces'] ?? array(), true ) ? '' : ' hidden' ) . '>';
-			spridisi_request_field( 'overnight_guests', __( 'Nakšņotāju skaits', 'spridisi' ), 'number', false, array( 'min' => 0, 'step' => 1, 'inputmode' => 'numeric' ), __( 'Norādi skaitu, ja izvēlēta nakšņošana.', 'spridisi' ) );
+			spridisi_request_field( 'overnight_guests', __( 'Nakšņotāju skaits', 'spridisi' ), 'number', false, array( 'min' => 0, 'max' => 40, 'step' => 1, 'inputmode' => 'numeric' ), __( 'Norādi skaitu, ja izvēlēta nakšņošana.', 'spridisi' ) );
 			echo '</div>';
 		}
 	}
@@ -532,7 +532,7 @@ function spridisi_request_assets() {
 		'past' => __( 'Norādi šodienas vai vēlāku sākuma datumu.', 'spridisi' ),
 		'end' => __( 'Beigu datums nedrīkst būt agrāks par sākuma datumu.', 'spridisi' ),
 		'guests' => __( 'Norādi veselu viesu skaitu, kas nav mazāks par 1.', 'spridisi' ),
-		'overnightGuests' => __( 'Norādi veselu nakšņotāju skaitu, kas nav mazāks par 0.', 'spridisi' ),
+		'overnightGuests' => __( 'Norādi veselu nakšņotāju skaitu no 0 līdz 40.', 'spridisi' ),
 		'overnightRequired' => __( 'Norādi nakšņotāju skaitu.', 'spridisi' ),
 		'overnightStay' => __( 'Lai norādītu nakšņotāju skaitu, izvēlies nakšņošanu.', 'spridisi' ),
 		'spaces' => __( 'Izvēlies vismaz vienu telpu vai piedāvājumu.', 'spridisi' ),
