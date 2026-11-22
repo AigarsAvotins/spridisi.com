@@ -368,3 +368,97 @@ function spridisi_setup_editable_homepage() {
 	exit;
 }
 add_action( 'admin_post_spridisi_setup_homepage', 'spridisi_setup_editable_homepage' );
+
+function spridisi_homepage_outdoor_notice() {
+	if ( ! current_user_can( 'manage_options' ) || ! current_user_can( 'publish_pages' ) ) {
+		return;
+	}
+	$homepage_id = absint( get_option( 'page_on_front' ) );
+	$sections = spridisi_homepage_sections();
+	if ( ! $homepage_id || ! isset( $sections['venue'] ) || ( spridisi_homepage_field( 'venue', 'outdoor-title' ) && spridisi_homepage_field( 'venue', 'outdoor' ) ) ) {
+		return;
+	}
+	echo '<div class="notice notice-info"><p>' . esc_html__( 'Pievieno rediģējamai sākumlapai sadaļu “Āra terase un teritorija” pēc mazās zāles. Esošais sākumlapas saturs tiks saglabāts.', 'spridisi' ) . '</p><form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
+	wp_nonce_field( 'spridisi_homepage_add_outdoor' );
+	echo '<input type="hidden" name="action" value="spridisi_homepage_add_outdoor">';
+	submit_button( __( 'Pievienot terases sadaļu', 'spridisi' ), 'secondary', 'submit', false );
+	echo '</form></div>';
+}
+add_action( 'admin_notices', 'spridisi_homepage_outdoor_notice' );
+
+function spridisi_homepage_add_outdoor() {
+	if ( ! current_user_can( 'manage_options' ) || ! current_user_can( 'publish_pages' ) ) {
+		wp_die( esc_html__( 'Tev nav atļauts atjaunināt šo sākumlapu.', 'spridisi' ) );
+	}
+	check_admin_referer( 'spridisi_homepage_add_outdoor' );
+	$homepage_id = absint( get_option( 'page_on_front' ) );
+	if ( ! $homepage_id || ! current_user_can( 'edit_post', $homepage_id ) ) {
+		wp_die( esc_html__( 'Tev nav atļauts rediģēt šo sākumlapu.', 'spridisi' ) );
+	}
+	$homepage = get_post( $homepage_id );
+	if ( ! $homepage || 'page' !== $homepage->post_type ) {
+		wp_die( esc_html__( 'Sākumlapa nav atrasta.', 'spridisi' ) );
+	}
+	$blocks = parse_blocks( $homepage->post_content );
+	$updated = false;
+	foreach ( $blocks as $root_index => $root ) {
+		if ( ! spridisi_block_has_class( $root, 'spridisi-homepage-content' ) ) {
+			continue;
+		}
+		foreach ( $root['innerBlocks'] as $section_index => $section ) {
+			if ( ! spridisi_block_has_class( $section, 'spridisi-content-venue' ) ) {
+				continue;
+			}
+			$fields = array();
+			$insert_index = count( $section['innerBlocks'] );
+			foreach ( $section['innerBlocks'] as $index => $block ) {
+				foreach ( array( 'outdoor-title', 'outdoor' ) as $field ) {
+					if ( spridisi_block_has_class( $block, 'spridisi-field-' . $field ) ) {
+						$fields[ $field ] = true;
+					}
+				}
+				if ( spridisi_block_has_class( $block, 'spridisi-field-small-hall' ) ) {
+					$insert_index = $index + 1;
+				}
+			}
+			$new_blocks = array();
+			if ( empty( $fields['outdoor-title'] ) ) {
+				$new_blocks[] = spridisi_seed_text( 'outdoor-title', 'Āra terase un teritorija', true );
+			}
+			if ( empty( $fields['outdoor'] ) ) {
+				$new_blocks[] = spridisi_seed_text( 'outdoor', '' );
+			}
+			if ( ! $new_blocks ) {
+				$updated = true;
+				break 2;
+			}
+			$inner_content_index = count( $section['innerContent'] ) - 1;
+			$child_index = 0;
+			foreach ( $section['innerContent'] as $content_index => $content ) {
+				if ( null !== $content ) {
+					continue;
+				}
+				if ( $child_index === $insert_index ) {
+					$inner_content_index = $content_index;
+					break;
+				}
+				++$child_index;
+			}
+			array_splice( $section['innerBlocks'], $insert_index, 0, $new_blocks );
+			array_splice( $section['innerContent'], $inner_content_index, 0, array_fill( 0, count( $new_blocks ), null ) );
+			$blocks[ $root_index ]['innerBlocks'][ $section_index ] = $section;
+			$updated = true;
+			break 2;
+		}
+	}
+	if ( ! $updated ) {
+		wp_die( esc_html__( 'Sākumlapā nav atrasta svinību sadaļa. Saturs netika mainīts.', 'spridisi' ) );
+	}
+	$result = wp_update_post( wp_slash( array( 'ID' => $homepage_id, 'post_content' => serialize_blocks( $blocks ) ) ), true );
+	if ( is_wp_error( $result ) ) {
+		wp_die( esc_html( $result->get_error_message() ) );
+	}
+	wp_safe_redirect( get_edit_post_link( $homepage_id, 'raw' ) );
+	exit;
+}
+add_action( 'admin_post_spridisi_homepage_add_outdoor', 'spridisi_homepage_add_outdoor' );

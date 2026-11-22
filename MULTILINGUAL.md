@@ -104,12 +104,17 @@ is needed. The theme renders these values through its existing templates and CSS
 it does not render the editor's layout as the homepage design.
 
 Editable content includes hero eyebrow, heading, supporting text and both buttons;
-section headings, labels and descriptions; large/small hall headings and information;
+section headings, labels and descriptions; large/small hall and terrace headings and
+information;
 accommodation and sauna descriptions and buttons; each experience including SUP;
 three gallery images and introductory text; closing booking heading, label and
 destination; location identity and contact information. Empty descriptions do not
-appear on the public homepage. Hall headings only appear after their descriptions
-are populated. Unknown business facts and contact details are not invented.
+appear on the public homepage. Large/small hall headings only appear after their
+descriptions are populated; the terrace heading remains visible with an optional
+description. After updating the theme, an admin notice can add the terrace heading
+and empty description field to an existing homepage without overwriting its content.
+New homepage setups include both fields by default. Unknown business facts and
+contact details are not invented.
 
 The three real photographs remain the same. Their native Image blocks initially
 reference the existing theme assets; they are not duplicated in the Media Library
