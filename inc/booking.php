@@ -58,7 +58,7 @@ function spridisi_request_valid_date( $value ) {
 function spridisi_request_validate( $input ) {
 	$data = array();
 	$errors = array();
-	foreach ( array( 'name', 'email', 'phone', 'start_date', 'end_date', 'guests', 'event_type', 'event_other', 'contact_method' ) as $key ) {
+	foreach ( array( 'name', 'email', 'phone', 'start_date', 'end_date', 'guests', 'overnight_guests', 'event_type', 'event_other', 'contact_method' ) as $key ) {
 		$data[ $key ] = spridisi_request_input( $input, $key );
 	}
 	$data['information'] = spridisi_request_input( $input, 'information', true );
@@ -87,6 +87,12 @@ function spridisi_request_validate( $input ) {
 	}
 	if ( false === filter_var( $data['guests'], FILTER_VALIDATE_INT, array( 'options' => array( 'min_range' => 1 ) ) ) ) {
 		$errors['guests'] = __( 'Norādi veselu viesu skaitu, kas nav mazāks par 1.', 'spridisi' );
+	}
+	if ( '' !== $data['overnight_guests'] && false === filter_var( $data['overnight_guests'], FILTER_VALIDATE_INT, array( 'options' => array( 'min_range' => 0 ) ) ) ) {
+		$errors['overnight_guests'] = __( 'Norādi veselu nakšņotāju skaitu, kas nav mazāks par 0.', 'spridisi' );
+	}
+	if ( '' !== $data['overnight_guests'] && (int) $data['overnight_guests'] > 0 && ! in_array( 'stay', $data['spaces'], true ) ) {
+		$errors['overnight_guests'] = __( 'Lai norādītu nakšņotāju skaitu, izvēlies nakšņošanu.', 'spridisi' );
 	}
 	if ( ! isset( spridisi_request_events()[ $data['event_type'] ] ) ) {
 		$errors['event_type'] = __( 'Izvēlies pasākuma veidu.', 'spridisi' );
@@ -196,6 +202,7 @@ function spridisi_request_send_mail( $data, $page_id ) {
 		__( 'Ierašanās vai pasākuma sākuma datums:', 'spridisi' ) . ' ' . $data['start_date'],
 		__( 'Izbraukšanas vai pasākuma beigu datums:', 'spridisi' ) . ' ' . $data['end_date'],
 		__( 'Plānotais viesu skaits:', 'spridisi' ) . ' ' . $data['guests'],
+		__( 'Nakšņotāju skaits:', 'spridisi' ) . ' ' . ( '' === $data['overnight_guests'] ? '0' : $data['overnight_guests'] ),
 		__( 'Pasākuma veids:', 'spridisi' ) . ' ' . $event,
 		__( 'Vēlamā telpa vai piedāvājums:', 'spridisi' ) . ' ' . implode( ', ', $spaces ),
 		__( 'Kā visērtāk ar Tevi sazināties?', 'spridisi' ) . ' ' . $contact,
@@ -387,6 +394,8 @@ function spridisi_request_form() {
 		}
 		echo '</span></label>';
 	}
+	spridisi_request_field( 'overnight_guests', __( 'Nakšņotāju skaits', 'spridisi' ), 'number', false, array( 'min' => 0, 'step' => 1, 'inputmode' => 'numeric' ), __( 'Nakšņošana: 12 EUR par katru cilvēku.', 'spridisi' ) );
+	echo '<div class="request-estimate"><div role="status" aria-live="polite" aria-atomic="true"><p class="request-estimate-total"><strong>' . esc_html__( 'Aptuvenā summa', 'spridisi' ) . '</strong>: <output id="request-estimate-amount">—</output></p><p id="request-estimate-note">' . esc_html__( 'Izvēlies zāli, melno pirti vai nakšņošanu, lai redzētu aptuvenu aprēķinu.', 'spridisi' ) . '</p></div><ul><li>' . esc_html__( 'Mazā zāle: līdz 15 viesiem — 150 EUR; līdz 25 viesiem — 180 EUR.', 'spridisi' ) . '</li><li>' . esc_html__( 'Lielā zāle: līdz 30 viesiem — 250 EUR; 31–40 viesi — 300 EUR; vairāk nekā 40 — 350 EUR.', 'spridisi' ) . '</li><li>' . esc_html__( 'Kāzas — 400 EUR. Melnā pirts — 80 EUR. Nakšņošana — 12 EUR par katru nakšņotāju.', 'spridisi' ) . '</li></ul><p>' . esc_html__( 'Summa ir aptuvena un tiks precizēta pēc rezervācijas apstiprināšanas. Aprēķinā iekļauta izvēlētā zāle, melnā pirts un nakšņošana.', 'spridisi' ) . '</p></div>';
 	if ( isset( $errors['spaces'] ) ) {
 		echo '<p class="request-error" id="request-spaces-error">' . esc_html( $errors['spaces'] ) . '</p>';
 	}
@@ -512,7 +521,13 @@ function spridisi_request_assets() {
 		'past' => __( 'Norādi šodienas vai vēlāku sākuma datumu.', 'spridisi' ),
 		'end' => __( 'Beigu datums nedrīkst būt agrāks par sākuma datumu.', 'spridisi' ),
 		'guests' => __( 'Norādi veselu viesu skaitu, kas nav mazāks par 1.', 'spridisi' ),
+		'overnightGuests' => __( 'Norādi veselu nakšņotāju skaitu, kas nav mazāks par 0.', 'spridisi' ),
 		'spaces' => __( 'Izvēlies vismaz vienu telpu vai piedāvājumu.', 'spridisi' ),
+		'priceNoSelection' => __( 'Izvēlies zāli, melno pirti vai nakšņošanu, lai redzētu aptuvenu aprēķinu.', 'spridisi' ),
+		'priceNeedGuests' => __( 'Norādi viesu skaitu, lai aprēķinātu zāles cenu.', 'spridisi' ),
+		'priceSmallLimit' => __( 'Mazajai zālei cena par vairāk nekā 25 viesiem jāprecizē.', 'spridisi' ),
+		'priceDetails' => __( 'Aprēķinā iekļauta izvēlētā zāle, melnā pirts un nakšņošana; citas izvēles precizēsim atsevišķi.', 'spridisi' ),
+		'prices' => array( 'smallHall' => array( 'upTo15' => 150, 'upTo25' => 180 ), 'largeHall' => array( 'upTo30' => 250, 'upTo40' => 300, 'over40' => 350 ), 'wedding' => 400, 'sauna' => 80, 'overnight' => 12 ),
 		'sending' => __( 'Nosūta…', 'spridisi' ),
 		'submit' => __( 'Nosūtīt pieprasījumu', 'spridisi' ),
 	) );
