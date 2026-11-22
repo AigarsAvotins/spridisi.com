@@ -103,6 +103,15 @@ function spridisi_history_import_notice() {
 	if ( ! $screen || 'edit-page' !== $screen->id ) {
 		return;
 	}
+	$history_page = spridisi_section_page( 'history' );
+	if ( $history_page && 'complete' === get_post_meta( $history_page->ID, '_spridisi_history_import_state', true ) && current_user_can( 'edit_post', $history_page->ID ) && spridisi_history_images_pending( $history_page->ID ) ) {
+		echo '<div class="notice notice-info"><p>' . esc_html__( 'Vēstures fakti ir pārnesti. Tagad vari pārnest bildes uz šīs vietnes mediju bibliotēku.', 'spridisi' ) . '</p><form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
+		wp_nonce_field( 'spridisi_import_history_images_' . $history_page->ID );
+		echo '<input type="hidden" name="action" value="spridisi_import_history_images"><input type="hidden" name="history_archive_id" value="' . esc_attr( $history_page->ID ) . '">';
+		submit_button( __( 'Pārnest bildes', 'spridisi' ), 'secondary', 'submit', false );
+		echo '</form></div>';
+		return;
+	}
 	$source = spridisi_history_import_source();
 	if ( ! spridisi_history_import_available( $source ) ) {
 		return;
