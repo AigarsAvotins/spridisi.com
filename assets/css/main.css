@@ -141,8 +141,12 @@ h3 { font-size: 1.75rem; }
 .timeline__description-content--collapsed { max-height: 15em; overflow: hidden; }
 .timeline__expand { margin-top: 0.75rem; padding: 0.25rem 0; border: 0; border-bottom: 1px solid #9a9d8e; color: var(--forest); background: transparent; font: inherit; cursor: pointer; }
 .timeline__expand:hover { border-bottom-color: currentColor; }
+.timeline__media { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr)); gap: 1rem; margin-block: 1rem 1.5rem; }
+.timeline__media figure { min-width: 0; margin: 0; }
+.timeline__media img { display: block; width: auto; max-width: 100%; max-height: 28rem; height: auto; object-fit: contain; object-position: left top; margin: 0; background: #fff; }
 .history:not(.history-archive) .timeline__description-content img,
-.history:not(.history-archive) .timeline__description-content figure:has(img.history-entry-image) { display: none; }
+.history:not(.history-archive) .timeline__description-content figure:has(img.history-entry-image),
+.history:not(.history-archive) .timeline__media { display: none; }
 .history-archive__intro { max-width: 54rem; padding-block: 3rem 1rem; text-align: center; }
 .history-archive__intro .section-kicker { justify-content: center; }
 .history-archive__intro h1 { margin-inline: auto; }

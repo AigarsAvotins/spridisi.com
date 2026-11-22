@@ -66,6 +66,15 @@
 		const button = description.querySelector('.timeline__expand');
 		const heading = description.closest('li')?.querySelector('h3');
 		if (!content || !button) return;
+		const imageFigures = [...content.querySelectorAll('img.history-entry-image')]
+			.map((image) => image.closest('figure'))
+			.filter(Boolean);
+		if (imageFigures.length) {
+			const gallery = document.createElement('div');
+			gallery.className = 'timeline__media';
+			imageFigures.forEach((figure) => gallery.append(figure));
+			content.insertAdjacentElement('afterend', gallery);
+		}
 		const collapsedClass = 'timeline__description-content--collapsed';
 		const measure = () => {
 			if (button.getAttribute('aria-expanded') === 'true') return;
