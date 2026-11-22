@@ -91,6 +91,9 @@ function spridisi_request_validate( $input ) {
 	if ( '' !== $data['overnight_guests'] && false === filter_var( $data['overnight_guests'], FILTER_VALIDATE_INT, array( 'options' => array( 'min_range' => 0 ) ) ) ) {
 		$errors['overnight_guests'] = __( 'Norādi veselu nakšņotāju skaitu, kas nav mazāks par 0.', 'spridisi' );
 	}
+	if ( in_array( 'stay', $data['spaces'], true ) && '' === $data['overnight_guests'] ) {
+		$errors['overnight_guests'] = __( 'Norādi nakšņotāju skaitu.', 'spridisi' );
+	}
 	if ( '' !== $data['overnight_guests'] && (int) $data['overnight_guests'] > 0 && ! in_array( 'stay', $data['spaces'], true ) ) {
 		$errors['overnight_guests'] = __( 'Lai norādītu nakšņotāju skaitu, izvēlies nakšņošanu.', 'spridisi' );
 	}
@@ -394,8 +397,8 @@ function spridisi_request_form() {
 		}
 		echo '</span></label>';
 	}
-	spridisi_request_field( 'overnight_guests', __( 'Nakšņotāju skaits', 'spridisi' ), 'number', false, array( 'min' => 0, 'step' => 1, 'inputmode' => 'numeric' ), __( 'Nakšņošana: 12 EUR par katru cilvēku.', 'spridisi' ) );
-	echo '<div class="request-estimate"><div role="status" aria-live="polite" aria-atomic="true"><p class="request-estimate-total"><strong>' . esc_html__( 'Aptuvenā summa', 'spridisi' ) . '</strong>: <output id="request-estimate-amount">—</output></p><p id="request-estimate-note">' . esc_html__( 'Izvēlies zāli, melno pirti vai nakšņošanu, lai redzētu aptuvenu aprēķinu.', 'spridisi' ) . '</p></div><ul><li>' . esc_html__( 'Mazā zāle: līdz 15 viesiem — 150 EUR; līdz 25 viesiem — 180 EUR.', 'spridisi' ) . '</li><li>' . esc_html__( 'Lielā zāle: līdz 30 viesiem — 250 EUR; 31–40 viesi — 300 EUR; vairāk nekā 40 — 350 EUR.', 'spridisi' ) . '</li><li>' . esc_html__( 'Kāzas — 400 EUR. Melnā pirts — 80 EUR. Nakšņošana — 12 EUR par katru nakšņotāju.', 'spridisi' ) . '</li></ul><p>' . esc_html__( 'Summa ir aptuvena un tiks precizēta pēc rezervācijas apstiprināšanas. Aprēķinā iekļauta izvēlētā zāle, melnā pirts un nakšņošana.', 'spridisi' ) . '</p></div>';
+	spridisi_request_field( 'overnight_guests', __( 'Nakšņotāju skaits', 'spridisi' ), 'number', false, array( 'min' => 0, 'step' => 1, 'inputmode' => 'numeric' ), __( 'Norādi skaitu, ja izvēlēta nakšņošana.', 'spridisi' ) );
+	echo '<div class="request-estimate" hidden><div role="status" aria-live="polite" aria-atomic="true"><p class="request-estimate-total"><strong>' . esc_html__( 'Aptuvenā summa', 'spridisi' ) . '</strong>: <output id="request-estimate-amount">—</output></p></div><p>' . esc_html__( 'Summa ir aptuvena un tiks precizēta pēc rezervācijas apstiprināšanas.', 'spridisi' ) . '</p></div>';
 	if ( isset( $errors['spaces'] ) ) {
 		echo '<p class="request-error" id="request-spaces-error">' . esc_html( $errors['spaces'] ) . '</p>';
 	}
@@ -522,11 +525,9 @@ function spridisi_request_assets() {
 		'end' => __( 'Beigu datums nedrīkst būt agrāks par sākuma datumu.', 'spridisi' ),
 		'guests' => __( 'Norādi veselu viesu skaitu, kas nav mazāks par 1.', 'spridisi' ),
 		'overnightGuests' => __( 'Norādi veselu nakšņotāju skaitu, kas nav mazāks par 0.', 'spridisi' ),
+		'overnightRequired' => __( 'Norādi nakšņotāju skaitu.', 'spridisi' ),
+		'overnightStay' => __( 'Lai norādītu nakšņotāju skaitu, izvēlies nakšņošanu.', 'spridisi' ),
 		'spaces' => __( 'Izvēlies vismaz vienu telpu vai piedāvājumu.', 'spridisi' ),
-		'priceNoSelection' => __( 'Izvēlies zāli, melno pirti vai nakšņošanu, lai redzētu aptuvenu aprēķinu.', 'spridisi' ),
-		'priceNeedGuests' => __( 'Norādi viesu skaitu, lai aprēķinātu zāles cenu.', 'spridisi' ),
-		'priceSmallLimit' => __( 'Mazajai zālei cena par vairāk nekā 25 viesiem jāprecizē.', 'spridisi' ),
-		'priceDetails' => __( 'Aprēķinā iekļauta izvēlētā zāle, melnā pirts un nakšņošana; citas izvēles precizēsim atsevišķi.', 'spridisi' ),
 		'prices' => array( 'smallHall' => array( 'upTo15' => 150, 'upTo25' => 180 ), 'largeHall' => array( 'upTo30' => 250, 'upTo40' => 300, 'over40' => 350 ), 'wedding' => 400, 'sauna' => 80, 'overnight' => 12 ),
 		'sending' => __( 'Nosūta…', 'spridisi' ),
 		'submit' => __( 'Nosūtīt pieprasījumu', 'spridisi' ),
