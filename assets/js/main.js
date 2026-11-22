@@ -64,6 +64,7 @@
 	document.querySelectorAll('.timeline__description').forEach((description) => {
 		const content = description.querySelector('.timeline__description-content');
 		const button = description.querySelector('.timeline__expand');
+		const heading = description.closest('li')?.querySelector('h3');
 		if (!content || !button) return;
 		const collapsedClass = 'timeline__description-content--collapsed';
 		const measure = () => {
@@ -78,6 +79,7 @@
 			button.setAttribute('aria-expanded', String(expanded));
 			content.classList.toggle(collapsedClass, !expanded);
 			button.textContent = expanded ? button.dataset.less : button.dataset.more;
+			if (!expanded) heading?.scrollIntoView({ behavior: reducedMotion.matches ? 'instant' : 'smooth', block: 'start' });
 		});
 		measure();
 		if ('ResizeObserver' in window) {

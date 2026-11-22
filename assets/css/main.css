@@ -135,13 +135,14 @@ h3 { font-size: 1.75rem; }
 .timeline li:last-child { padding-bottom: 0; }
 .timeline__marker { position: absolute; top: 0.3rem; left: -0.3rem; width: 0.5625rem; height: 0.5625rem; border-radius: 50%; background: var(--copper); box-shadow: 0 0 0 6px #e9e9df; }
 .timeline .eyebrow { display: block; margin-bottom: 1.5rem; color: #6d5943; }
-.timeline h3 { margin-bottom: 0.75rem; }
+.timeline h3 { margin-bottom: 0.75rem; scroll-margin-top: calc(var(--spridisi-header-height, 6rem) + 1rem); }
 .timeline p { margin-bottom: 0; font-size: 0.875rem; color: #576153; }
 .timeline .timeline__description img { display: block; max-width: 100%; height: auto; margin-block: 1rem; }
 .timeline__description-content--collapsed { max-height: 15em; overflow: hidden; }
 .timeline__expand { margin-top: 0.75rem; padding: 0.25rem 0; border: 0; border-bottom: 1px solid #9a9d8e; color: var(--forest); background: transparent; font: inherit; cursor: pointer; }
 .timeline__expand:hover { border-bottom-color: currentColor; }
-.history:not(.history-archive) .timeline__description-content img { display: none; }
+.history:not(.history-archive) .timeline__description-content img,
+.history:not(.history-archive) .timeline__description-content figure:has(img.history-entry-image) { display: none; }
 .history-archive__intro { max-width: 54rem; padding-block: 3rem 1rem; text-align: center; }
 .history-archive__intro .section-kicker { justify-content: center; }
 .history-archive__intro h1 { margin-inline: auto; }
@@ -231,6 +232,9 @@ h3 { font-size: 1.75rem; }
 	.timeline { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-block: 5rem 3rem; }
 	.timeline li { border-top: 1px solid #a1a48e; border-left: 0; padding: 2.5rem 2rem 0 0; }
 	.timeline__marker { top: -0.3rem; left: 0; }
+	.history-archive .timeline { width: min(100%, 54rem); grid-template-columns: minmax(0, 1fr); margin-block: 3.5rem 2.5rem; margin-inline: auto; }
+	.history-archive .timeline li { border-top: 0; border-left: 1px solid #a1a48e; padding: 0 0 2.5rem 2rem; }
+	.history-archive .timeline__marker { top: 0.3rem; left: -0.3rem; }
 	.gallery-grid { grid-template-columns: 1.3fr 1fr; grid-template-rows: 15rem 15rem; gap: 1.5rem; }
 	.gallery__image, .gallery__image:first-child { aspect-ratio: auto; }
 	.gallery__image:first-child { grid-column: 1; grid-row: 1 / 3; }

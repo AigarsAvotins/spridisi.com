@@ -142,6 +142,11 @@ Each imported history entry has a **Vēstures izcēlums** checkbox in its page e
 select up to three to feature on the homepage. If none are selected, the first three
 entries are shown. The homepage button opens the full local archive. Long entries
 collapse at roughly ten lines and can be expanded in place.
+After the text migration, use **Pārnest bildes** beside the local history archive
+page under **Pages > All Pages**. It copies only the history-page images into this
+site's Media Library, attaches them to their dated entries, and can be safely
+repeated. Images remain hidden in the three homepage highlights and appear in the
+full archive.
 
 Translate the actual homepage page with Polylang/WPML later. Each translated page
 stores its own native text/button/image blocks with the same stable structural

@@ -123,6 +123,12 @@ function spridisi_history_import_row_action( $actions, $post ) {
 	if ( ! $post instanceof WP_Post ) {
 		return $actions;
 	}
+	if ( 'complete' === get_post_meta( $post->ID, '_spridisi_history_import_state', true ) && current_user_can( 'edit_post', $post->ID ) && spridisi_history_images_pending( $post->ID ) ) {
+		$url = add_query_arg( array( 'action' => 'spridisi_import_history_images', 'history_archive_id' => $post->ID ), admin_url( 'admin-post.php' ) );
+		$url = wp_nonce_url( $url, 'spridisi_import_history_images_' . $post->ID );
+		$actions['spridisi_import_history_images'] = '<a href="' . esc_url( $url ) . '">' . esc_html__( 'Pārnest bildes', 'spridisi' ) . '</a>';
+		return $actions;
+	}
 	$local_source = 'history' === $post->post_name;
 	$remote_source = ! $local_source && ! get_page_by_path( 'history', OBJECT, 'page' ) && (int) get_option( 'page_on_front' ) === (int) $post->ID;
 	$source = $local_source ? spridisi_history_import_source( $post->ID ) : ( $remote_source ? spridisi_history_import_source( 0, true ) : null );
@@ -343,3 +349,212 @@ function spridisi_history_archive_template( $template ) {
 	return file_exists( $archive_template ) ? $archive_template : $template;
 }
 add_filter( 'template_include', 'spridisi_history_archive_template', 99 );
+
+function spridisi_history_image_manifest() {
+	$cached = get_transient( 'spridisi_history_image_manifest' );
+	if ( is_array( $cached ) ) {
+		return $cached;
+	}
+	$response = wp_remote_get( 'https://spridisi.com/history/', array( 'timeout' => 20, 'redirection' => 3, 'limit_response_size' => 16777216 ) );
+	if ( is_wp_error( $response ) || 200 !== wp_remote_retrieve_response_code( $response ) ) {
+		return new WP_Error( 'history_images_unavailable', __( 'Avota lapas bildes pašlaik nav pieejamas.', 'spridisi' ) );
+	}
+	$document = new DOMDocument( '1.0', 'UTF-8' );
+	$previous = libxml_use_internal_errors( true );
+	$loaded = $document->loadHTML( '<?xml encoding="utf-8" ?>' . wp_remote_retrieve_body( $response ), LIBXML_HTML_NODEFDTD | LIBXML_NONET );
+	libxml_clear_errors();
+	libxml_use_internal_errors( $previous );
+	if ( ! $loaded ) {
+		return new WP_Error( 'history_images_parse_failed', __( 'Avota lapas bildes neizdevās nolasīt.', 'spridisi' ) );
+	}
+	$xpath = new DOMXPath( $document );
+	$nodes = $xpath->query( '//img[contains(concat(" ", normalize-space(@class), " "), " pagelayer-img ")]' );
+	$images = array();
+	$seen = array();
+	foreach ( $nodes as $node ) {
+		$url = esc_url_raw( $node->getAttribute( 'src' ) );
+		$parts = wp_parse_url( $url );
+		$path = $parts['path'] ?? '';
+		if ( ! in_array( $parts['host'] ?? '', array( 'spridisi.com', 'www.spridisi.com' ), true ) || 'https' !== ( $parts['scheme'] ?? '' ) || ! str_starts_with( $path, '/wp-content/uploads/' ) || isset( $seen[ $url ] ) ) {
+			continue;
+		}
+		$filename = rawurldecode( wp_basename( $path ) );
+		if ( 'pils.jpg' === strtolower( $filename ) ) {
+			$year = '1337.gads';
+		} elseif ( str_contains( strtolower( $filename ), 'vecelpils-skola' ) ) {
+			$year = '1926.gads';
+		} elseif ( str_contains( strtolower( $filename ), 'raina-klubs' ) ) {
+			$year = '1927.gads';
+		} elseif ( str_contains( $filename, '1966' ) ) {
+			$year = '1966.gads';
+		} elseif ( str_contains( $filename, '1973' ) ) {
+			$year = '1973.gads';
+		} else {
+			continue;
+		}
+		$images[] = array( 'url' => $url, 'alt' => sanitize_text_field( $node->getAttribute( 'alt' ) ), 'year' => $year );
+		$seen[ $url ] = true;
+	}
+	set_transient( 'spridisi_history_image_manifest', $images, 12 * HOUR_IN_SECONDS );
+	return $images;
+}
+
+function spridisi_history_image_entry( $history_id, $year ) {
+	foreach ( spridisi_content_children( $history_id ) as $entry ) {
+		if ( get_the_title( $entry ) === $year ) {
+			return $entry;
+		}
+	}
+	$target_year = (int) $year;
+	$previous_order = 0;
+	$next_order = 0;
+	foreach ( spridisi_content_children( $history_id ) as $entry ) {
+		$title = get_the_title( $entry );
+		if ( ! preg_match( '/^(\d{4})/', $title, $matches ) ) {
+			continue;
+		}
+		$entry_year = (int) $matches[1];
+		if ( $entry_year < $target_year ) {
+			$previous_order = max( $previous_order, (int) $entry->menu_order );
+		} elseif ( $entry_year > $target_year && ( ! $next_order || (int) $entry->menu_order < $next_order ) ) {
+			$next_order = (int) $entry->menu_order;
+		}
+	}
+	$order = $previous_order ? $previous_order + 1 : ( $next_order ? $next_order - 1 : 10 );
+	$id = wp_insert_post( wp_slash( array(
+		'post_type' => 'page',
+		'post_status' => 'publish',
+		'post_title' => $year,
+		'post_name' => sanitize_title( $year . '-pictures' ),
+		'post_parent' => $history_id,
+		'menu_order' => $order,
+		'post_content' => '',
+	) ), true );
+	if ( is_wp_error( $id ) ) {
+		return $id;
+	}
+	update_post_meta( $id, '_spridisi_history_source_id', get_post_meta( $history_id, '_spridisi_history_source_id', true ) );
+	return get_post( $id );
+}
+
+function spridisi_history_images_pending( $history_id ) {
+	if ( 'complete' !== get_post_meta( $history_id, '_spridisi_history_import_state', true ) || 'complete' === get_post_meta( $history_id, '_spridisi_history_images_state', true ) ) {
+		return false;
+	}
+	$images = spridisi_history_image_manifest();
+	if ( is_wp_error( $images ) ) {
+		return true;
+	}
+	foreach ( $images as $image ) {
+		$entry = spridisi_history_image_entry_lookup( $history_id, $image['year'] );
+		if ( ! $entry || ! in_array( $image['url'], get_post_meta( $entry->ID, '_spridisi_history_imported_images', true ) ?: array(), true ) ) {
+			return true;
+		}
+	}
+	return false;
+}
+
+function spridisi_history_image_entry_lookup( $history_id, $year ) {
+	foreach ( spridisi_content_children( $history_id ) as $entry ) {
+		if ( get_the_title( $entry ) === $year ) {
+			return $entry;
+		}
+	}
+	return null;
+}
+
+function spridisi_import_history_images() {
+	$history_id = isset( $_REQUEST['history_archive_id'] ) ? absint( wp_unslash( $_REQUEST['history_archive_id'] ) ) : 0;
+	if ( ! current_user_can( 'manage_options' ) || ! current_user_can( 'publish_pages' ) || ! $history_id || ! current_user_can( 'edit_post', $history_id ) ) {
+		wp_die( esc_html__( 'Tev nav atļauts pārnest vēstures bildes.', 'spridisi' ) );
+	}
+	check_admin_referer( 'spridisi_import_history_images_' . $history_id );
+	$history_page = get_post( $history_id );
+	if ( ! $history_page || 'complete' !== get_post_meta( $history_id, '_spridisi_history_import_state', true ) ) {
+		wp_die( esc_html__( 'Pilnā vēstures lapa nav atrasta.', 'spridisi' ) );
+	}
+	$images = spridisi_history_image_manifest();
+	if ( is_wp_error( $images ) ) {
+		wp_die( esc_html( $images->get_error_message() ) );
+	}
+	require_once ABSPATH . 'wp-admin/includes/media.php';
+	require_once ABSPATH . 'wp-admin/includes/file.php';
+	require_once ABSPATH . 'wp-admin/includes/image.php';
+	$imported = 0;
+	$errors = array();
+	foreach ( $images as $image ) {
+		$entry = spridisi_history_image_entry( $history_id, $image['year'] );
+		if ( is_wp_error( $entry ) ) {
+			$errors[] = $entry->get_error_message();
+			continue;
+		}
+		$imported_urls = get_post_meta( $entry->ID, '_spridisi_history_imported_images', true );
+		$imported_urls = is_array( $imported_urls ) ? $imported_urls : array();
+		if ( in_array( $image['url'], $imported_urls, true ) ) {
+			continue;
+		}
+		$attachment_id = 0;
+		$matches = get_posts( array(
+			'post_type' => 'attachment',
+			'post_status' => 'inherit',
+			'meta_key' => '_spridisi_history_source_image_url',
+			'meta_value' => $image['url'],
+			'numberposts' => 1,
+			'fields' => 'ids',
+		) );
+		if ( $matches ) {
+			$attachment_id = (int) $matches[0];
+		} else {
+			$attachment_id = media_sideload_image( $image['url'], $entry->ID, $image['alt'], 'id' );
+			if ( is_wp_error( $attachment_id ) ) {
+				$errors[] = $image['url'] . ': ' . $attachment_id->get_error_message();
+				continue;
+			}
+			update_post_meta( $attachment_id, '_spridisi_history_source_image_url', $image['url'] );
+			if ( $image['alt'] ) {
+				update_post_meta( $attachment_id, '_wp_attachment_image_alt', $image['alt'] );
+			}
+		}
+		$markup = wp_get_attachment_image( $attachment_id, 'large', false, array( 'class' => 'history-entry-image', 'alt' => $image['alt'], 'loading' => 'lazy', 'decoding' => 'async' ) );
+		if ( ! $markup ) {
+			$errors[] = $image['url'] . ': ' . __( 'Bildes HTML neizdevās izveidot.', 'spridisi' );
+			continue;
+		}
+		$result = wp_update_post( wp_slash( array( 'ID' => $entry->ID, 'post_content' => rtrim( $entry->post_content ) . "\n\n<figure class=\"wp-block-image\">" . $markup . '</figure>' ) ), true );
+		if ( is_wp_error( $result ) ) {
+			$errors[] = $image['url'] . ': ' . $result->get_error_message();
+			continue;
+		}
+		$imported_urls[] = $image['url'];
+		update_post_meta( $entry->ID, '_spridisi_history_imported_images', $imported_urls );
+		++$imported;
+	}
+	if ( ! $errors ) {
+		update_post_meta( $history_id, '_spridisi_history_images_state', 'complete' );
+	}
+	set_transient( 'spridisi_history_images_result_' . get_current_user_id(), array( 'imported' => $imported, 'errors' => $errors ), MINUTE_IN_SECONDS );
+	wp_safe_redirect( admin_url( 'edit.php?post_type=page' ) );
+	exit;
+}
+add_action( 'admin_post_spridisi_import_history_images', 'spridisi_import_history_images' );
+
+function spridisi_history_images_admin_notice() {
+	$key = 'spridisi_history_images_result_' . get_current_user_id();
+	$result = get_transient( $key );
+	if ( ! is_array( $result ) ) {
+		return;
+	}
+	delete_transient( $key );
+	$message = sprintf( __( 'Pārnesti %d attēli.', 'spridisi' ), (int) $result['imported'] );
+	$class = empty( $result['errors'] ) ? 'notice-success' : 'notice-warning';
+	echo '<div class="notice ' . esc_attr( $class ) . '"><p>' . esc_html( $message ) . '</p>';
+	if ( ! empty( $result['errors'] ) ) {
+		echo '<ul>';
+		foreach ( $result['errors'] as $error ) {
+			echo '<li>' . esc_html( $error ) . '</li>';
+		}
+		echo '</ul>';
+	}
+	echo '</div>';
+}
+add_action( 'admin_notices', 'spridisi_history_images_admin_notice' );
