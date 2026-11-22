@@ -466,12 +466,7 @@ function spridisi_request_form() {
 		echo '<p class="request-error" id="request-consent-error">' . esc_html( $errors['consent'] ) . '</p>';
 	}
 	echo '</div>';
-	if ( spridisi_request_turnstile_configured() ) {
-		echo '<div class="request-verification"><div class="cf-turnstile" data-sitekey="' . esc_attr( SPRIDISI_TURNSTILE_SITE_KEY ) . '" data-action="reservation" data-language="lv"></div><p id="request-turnstile-error" class="request-error" role="alert" hidden></p></div>';
-	} else {
-		echo '<p class="request-verification-notice" role="status">' . esc_html__( 'Drošības pārbaude vēl nav konfigurēta. Lūdzu, sazinies ar mums pa tālruni vai WhatsApp.', 'spridisi' ) . '</p>';
-	}
-	echo '<button class="button request-submit" type="submit"' . ( spridisi_request_turnstile_configured() ? '' : ' disabled' ) . '>' . esc_html__( 'Nosūtīt', 'spridisi' ) . '</button></form>';
+	echo '<button class="button request-submit" type="submit">' . esc_html__( 'Nosūtīt', 'spridisi' ) . '</button></form>';
 }
 
 function spridisi_request_page_content() {
