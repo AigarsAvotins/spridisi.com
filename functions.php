@@ -68,6 +68,99 @@ function spridisi_enqueue_assets() {
 }
 add_action( 'wp_enqueue_scripts', 'spridisi_enqueue_assets' );
 
+// SEO: Add meta tags and structured data
+function spridisi_add_meta_tags() {
+	$site_title = get_bloginfo( 'name' );
+	$site_description = get_bloginfo( 'description' );
+	$site_url = home_url( '/' );
+	
+	// Meta description based on page
+	if ( is_front_page() ) {
+		$meta_description = $site_description ?: 'Sprīdīši - Skaists pasākumu vieta Vecsēlpilī, Jēkabpils novadā. Organizējam kāzas, dzimšanas dienas, ģimenes svētkus un korporatīvos pasākumus.';
+		$page_title = $site_title;
+	} elseif ( is_page( 'rezervacija' ) ) {
+		$meta_description = 'Rezervējiet Sprīdīši savu nākamo pasākumu vai nakšņošanu. Personisks pieeja, skaists skats uz Daugavu.';
+		$page_title = 'Rezervācija – ' . $site_title;
+	} else {
+		$meta_description = $site_description;
+		$page_title = get_the_title() ? get_the_title() . ' – ' . $site_title : $site_title;
+	}
+	
+	echo "\n<!-- SEO Meta Tags -->\n";
+	echo '<meta name="description" content="' . esc_attr( wp_trim_words( $meta_description, 160 ) ) . '">' . "\n";
+	echo '<meta name="viewport" content="width=device-width, initial-scale=1">' . "\n";
+	echo '<meta name="theme-color" content="#ffffff">' . "\n";
+	
+	// Open Graph tags for social sharing
+	echo "\n<!-- Open Graph Meta Tags -->\n";
+	echo '<meta property="og:type" content="' . ( is_front_page() ? 'website' : 'article' ) . '">' . "\n";
+	echo '<meta property="og:title" content="' . esc_attr( $page_title ) . '">' . "\n";
+	echo '<meta property="og:description" content="' . esc_attr( wp_trim_words( $meta_description, 160 ) ) . '">' . "\n";
+	echo '<meta property="og:url" content="' . esc_attr( is_front_page() ? $site_url : get_permalink() ) . '">' . "\n";
+	echo '<meta property="og:site_name" content="' . esc_attr( $site_title ) . '">' . "\n";
+	
+	// Image for social sharing
+	$image_id = get_post_thumbnail_id();
+	if ( $image_id ) {
+		$image_url = wp_get_attachment_image_url( $image_id, 'large' );
+		if ( $image_url ) {
+			echo '<meta property="og:image" content="' . esc_attr( $image_url ) . '">' . "\n";
+			echo '<meta property="og:image:width" content="1200">' . "\n";
+			echo '<meta property="og:image:height" content="630">' . "\n";
+		}
+	}
+	
+	// Twitter Card tags
+	echo "\n<!-- Twitter Card Tags -->\n";
+	echo '<meta name="twitter:card" content="summary_large_image">' . "\n";
+	echo '<meta name="twitter:title" content="' . esc_attr( $page_title ) . '">' . "\n";
+	echo '<meta name="twitter:description" content="' . esc_attr( wp_trim_words( $meta_description, 160 ) ) . '">' . "\n";
+	
+	// Canonical URL
+	echo '<link rel="canonical" href="' . esc_attr( is_front_page() ? $site_url : get_permalink() ) . '">' . "\n";
+	
+	// Alternate language links
+	echo '<link rel="alternate" hreflang="lv" href="' . esc_attr( $site_url ) . '">' . "\n";
+	echo '<link rel="alternate" hreflang="x-default" href="' . esc_attr( $site_url ) . '">' . "\n";
+}
+add_action( 'wp_head', 'spridisi_add_meta_tags', 5 );
+
+// SEO: Add structured data (Schema.org)
+function spridisi_add_structured_data() {
+	$contact_details = spridisi_default_contact_details();
+	$review_details = spridisi_default_review_details();
+	
+	$structured_data = array(
+		'@context' => 'https://schema.org',
+		'@type' => 'LocalBusiness',
+		'name' => get_bloginfo( 'name' ),
+		'description' => get_bloginfo( 'description' ),
+		'url' => home_url( '/' ),
+		'telephone' => $contact_details['phone'],
+		'email' => $contact_details['email'],
+		'address' => array(
+			'@type' => 'PostalAddress',
+			'streetAddress' => 'Sprīdīši, Sēlpils pagasts',
+			'addressLocality' => 'Jēkabpils',
+			'postalCode' => 'LV-5232',
+			'addressCountry' => 'LV',
+		),
+		'sameAs' => array(
+			$contact_details['facebook'],
+			$contact_details['instagram'],
+		),
+		'aggregateRating' => array(
+			'@type' => 'AggregateRating',
+			'ratingValue' => $review_details['google_rating'],
+			'reviewCount' => $review_details['google_review_count'],
+		),
+	);
+	
+	echo "\n<!-- Structured Data (Schema.org) -->\n";
+	echo '<script type="application/ld+json">' . wp_json_encode( $structured_data ) . '</script>' . "\n";
+}
+add_action( 'wp_head', 'spridisi_add_structured_data', 6 );
+
 require_once get_theme_file_path( '/inc/homepage-content.php' );
 require_once get_theme_file_path( '/inc/gallery.php' );
 require_once get_theme_file_path( '/inc/booking.php' );
