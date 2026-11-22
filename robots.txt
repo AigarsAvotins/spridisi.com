@@ -1,0 +1,21 @@
+# https://spridisi.com/robots.txt
+# Generated for SEO optimization
+
+User-agent: *
+Allow: /
+Disallow: /wp-admin/
+Disallow: /wp-login.php
+Disallow: /wp-includes/
+Disallow: /wp-content/plugins/
+Disallow: /*?*
+Disallow: /*utm_
+Disallow: /feed/
+Disallow: /xmlrpc.php
+Disallow: /?s=
+
+# Crawl delay to be respectful
+Crawl-delay: 1
+
+# Sitemap location
+Sitemap: https://spridisi.com/sitemap.xml
+Sitemap: https://spridisi.com/sitemap-pages.xml
