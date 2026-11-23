@@ -333,9 +333,9 @@ function spridisi_request_route() {
 	}
 	$state = spridisi_request_process( wp_unslash( $_POST ), $page_id );
 	if ( ! empty( $state['accepted'] ) ) {
-		$path = wp_parse_url( get_permalink( $page_id ), PHP_URL_PATH );
-		setcookie( 'spridisi_request_receipt', spridisi_request_receipt( $page_id, $state['token'] ), array( 'expires' => time() + 15 * MINUTE_IN_SECONDS, 'path' => $path ? $path : '/', 'secure' => is_ssl(), 'httponly' => true, 'samesite' => 'Lax' ) );
-		wp_safe_redirect( add_query_arg( 'request', 'received', get_permalink( $page_id ) ) . '#booking-status', 303 );
+		$permalink = $page_id ? get_permalink( $page_id ) : home_url( '/rezervacija/' );
+		setcookie( 'spridisi_request_receipt', spridisi_request_receipt( $page_id, $state['token'] ), array( 'expires' => time() + 15 * MINUTE_IN_SECONDS, 'path' => '/', 'secure' => is_ssl(), 'httponly' => true, 'samesite' => 'Lax' ) );
+		wp_safe_redirect( add_query_arg( 'request', 'received', $permalink ) . '#booking-status', 303 );
 		exit;
 	}
 	$GLOBALS['spridisi_request_state'] = $state;
