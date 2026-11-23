@@ -115,6 +115,12 @@ $section_content = spridisi_section_content( 'venue' );
 							<?php endforeach; ?>
 						</div>
 
+						<?php if ( ! empty( $hall_image['url'] ) ) : ?>
+							<div class="venue-card__image">
+								<?php spridisi_photo( 'venue', 'venue-card-image', 'large', false, $hall['id'] . '-image' ); ?>
+							</div>
+						<?php endif; ?>
+
 						<?php if ( $hall_full_content ) : ?>
 							<div class="venue-card__description">
 								<?php echo wp_kses_post( $hall_full_content ); ?>

@@ -149,6 +149,25 @@
   background: linear-gradient(135deg, #fff 0%, #f9f7f3 100%);
 }
 
+/* Image */
+.venue-card__image {
+  margin: 1.5rem -2rem -2rem -2rem;
+  overflow: hidden;
+  border-radius: 0 0 12px 12px;
+  transition: transform 0.3s ease;
+}
+
+.venue-card__image img {
+  width: 100%;
+  height: auto;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.venue-card:hover .venue-card__image img {
+  transform: scale(1.05);
+}
+
 /* ===================================
    ACCOMMODATION SECTION - Divi Kolonna
    =================================== */
