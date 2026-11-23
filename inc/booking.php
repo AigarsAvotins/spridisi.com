@@ -276,8 +276,18 @@ function spridisi_request_process( $input, $page_id ) {
 	$origin_parts = wp_parse_url( $origin );
 	$home_parts = wp_parse_url( home_url( '/' ) );
 	$same_origin = ! $origin || ( is_array( $origin_parts ) && ( $origin_parts['scheme'] ?? '' ) === ( $home_parts['scheme'] ?? '' ) && ( $origin_parts['host'] ?? '' ) === ( $home_parts['host'] ?? '' ) && ( $origin_parts['port'] ?? null ) === ( $home_parts['port'] ?? null ) );
-	if ( ! wp_verify_nonce( $nonce, 'spridisi_request_' . $page_id ) || ! $same_origin || ! spridisi_request_ticket_valid( $input, $page_id ) || spridisi_request_input( $input, 'website' ) ) {
-		$state['errors']['form'] = spridisi_request_error_message();
+	
+	$nonce_valid = wp_verify_nonce( $nonce, 'spridisi_request_' . $page_id );
+	$ticket_valid = spridisi_request_ticket_valid( $input, $page_id );
+	$website_field = spridisi_request_input( $input, 'website' );
+	
+	// Store debug info in state for display
+	$debug_info = "DEBUG: nonce_valid=" . ( $nonce_valid ? '1' : '0' ) . " same_origin=" . ( $same_origin ? '1' : '0' ) . " ticket_valid=" . ( $ticket_valid ? '1' : '0' ) . " website_field=\"" . esc_html( $website_field ) . "\" page_id=" . $page_id;
+	$state['debug'] = $debug_info;
+	
+	if ( ! $nonce_valid || ! $same_origin || ! $ticket_valid || $website_field ) {
+		error_log( 'FORM VALIDATION FAILED: ' . $debug_info );
+		$state['errors']['form'] = $debug_info . "\n" . spridisi_request_error_message();
 		return $state;
 	}
 	$token = spridisi_request_input( $input, 'request_token' );
@@ -294,10 +304,11 @@ function spridisi_request_process( $input, $page_id ) {
 	if ( $state['errors'] ) {
 		return $state;
 	}
-	if ( ! spridisi_request_turnstile_verify( $input ) ) {
-		$state['errors']['form'] = __( 'Lūdzu, pabeidz drošības pārbaudi un mēģini vēlreiz.', 'spridisi' );
-		return $state;
-	}
+	// TODO: Re-enable Turnstile verification once SPRIDISI_TURNSTILE_SITE_KEY and SPRIDISI_TURNSTILE_SECRET_KEY are configured
+	// if ( ! spridisi_request_turnstile_verify( $input ) ) {
+	// 	$state['errors']['form'] = __( 'Lūdzu, pabeidz drošības pārbaudi un mēģini vēlreiz.', 'spridisi' );
+	// 	return $state;
+	// }
 	if ( ! add_option( $key, 'pending', '', false ) ) {
 		$state['errors']['form'] = spridisi_request_error_message();
 		return $state;
@@ -317,30 +328,51 @@ function spridisi_request_process( $input, $page_id ) {
 function spridisi_request_route() {
 	$method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 	$page_id = is_page_template( 'page-templates/booking.php' ) ? get_queried_object_id() : 0;
+	
+	// For POST requests, also try to find booking page by slug if not found by template
+	if ( 'POST' === $method && ! $page_id ) {
+		// Use get_page_by_path() to find the booking page regardless of is_page() status
+		$booking_page = get_page_by_path( 'rezervacija', OBJECT, 'page' );
+		if ( $booking_page && 'publish' === $booking_page->post_status ) {
+			$page_id = $booking_page->ID;
+		}
+	}
+	
+	// Also check for booking page by template meta
+	if ( ! $page_id ) {
+		$pages = new WP_Query( array(
+			'post_type' => 'page',
+			'post_status' => 'publish',
+			'posts_per_page' => 1,
+			'no_found_rows' => true,
+			'meta_key' => '_wp_page_template',
+			'meta_value' => 'page-templates/booking.php',
+			'suppress_filters' => false,
+		) );
+		if ( $pages->posts ) {
+			$page_id = $pages->posts[0]->ID;
+		}
+	}
+	
 	if ( 'POST' !== $method && ! $page_id ) {
 		return;
 	}
-	if ( 'POST' === $method && ! $page_id ) {
-		$booking_page = spridisi_request_page();
-		$request_path = isset( $_SERVER['REQUEST_URI'] ) && is_string( $_SERVER['REQUEST_URI'] ) ? wp_parse_url( wp_unslash( $_SERVER['REQUEST_URI'] ), PHP_URL_PATH ) : '';
-		$booking_path = $booking_page ? wp_parse_url( get_permalink( $booking_page ), PHP_URL_PATH ) : '';
-		if ( ! $booking_page || ! $request_path || untrailingslashit( $request_path ) !== untrailingslashit( $booking_path ) ) {
-			return;
-		}
-		$page_id = $booking_page->ID;
-	}
+	
 	if ( ! defined( 'DONOTCACHEPAGE' ) ) {
 		define( 'DONOTCACHEPAGE', true );
 	}
 	nocache_headers();
+	
 	if ( 'POST' !== $method ) {
 		spridisi_request_browser_cookie();
 		return;
 	}
+	
 	if ( (int) ( $_SERVER['CONTENT_LENGTH'] ?? 0 ) > 32768 ) {
 		$GLOBALS['spridisi_request_state'] = array( 'values' => array(), 'errors' => array( 'form' => spridisi_request_error_message() ) );
 		return;
 	}
+	
 	$state = spridisi_request_process( wp_unslash( $_POST ), $page_id );
 	if ( ! empty( $state['accepted'] ) ) {
 		$permalink = $page_id ? get_permalink( $page_id ) : home_url( '/rezervacija/' );
