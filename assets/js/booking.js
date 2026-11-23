@@ -18,10 +18,14 @@
 	const submit = form.querySelector('[type="submit"]');
 	form.noValidate = true;
 	const synchronize = () => {
-		const required = event.value === 'other';
-		other.required = required;
-		other.disabled = !required;
-		form.querySelector('.request-other').hidden = !required;
+		const isOtherEvent = event.value === 'other';
+		other.required = isOtherEvent;
+		other.disabled = !isOtherEvent;
+		form.querySelector('.request-other').hidden = !isOtherEvent;
+		
+		const guestsField = form.elements.guests;
+		guestsField.required = !isOtherEvent;
+		
 		const staying = spaces.some(field => field.checked && field.value === 'stay');
 		overnight.required = staying;
 		overnightField.hidden = !staying;
@@ -40,30 +44,38 @@
 		const staying = spaces.some(field => field.checked && field.value === 'stay');
 		const overnightValid = /^(0|[1-9]\d*)$/.test(overnight.value);
 		const overnightCount = overnightValid ? Number.parseInt(overnight.value, 10) : 0;
-		if (!event.value || (hasHall && (!Number.isInteger(guestCount) || guestCount < 1)) || (!hasHall && !staying && !sauna) || (staying && !overnightValid) || (overnightCount > 0 && !staying)) {
+		const startDate = new Date(start.value);
+		const endDate = new Date(end.value);
+		const dayCount = (endDate - startDate) / (1000 * 60 * 60 * 24);
+		
+		if (!event.value || (!hasHall && !staying && !sauna) || (staying && !overnightValid) || (overnightCount > 0 && !staying)) {
 			estimate.hidden = true;
 			return;
 		}
+		
+		if (hasHall && (!Number.isInteger(guestCount) || guestCount < 1)) {
+			estimate.hidden = true;
+			return;
+		}
+		
 		let hallPrice = 0;
-		let smallHallNeedsReview = false;
-		if (event.value === 'wedding' && hasHall) hallPrice = prices.wedding;
-		else if (hasHall) {
-			if (smallHall) {
-				if (guestCount <= 15) hallPrice += prices.smallHall.upTo15;
-				else if (guestCount <= 25) hallPrice += prices.smallHall.upTo25;
-				else smallHallNeedsReview = true;
-			}
-			if (largeHall) {
-				if (guestCount <= 30) hallPrice += prices.largeHall.upTo30;
-				else if (guestCount <= 40) hallPrice += prices.largeHall.upTo40;
-				else hallPrice += prices.largeHall.over40;
-			}
+		if (hasHall && dayCount > 0) {
+			if (smallHall) hallPrice += prices.smallHall * dayCount;
+			if (largeHall) hallPrice += prices.largeHall * dayCount;
 		}
-		if (smallHallNeedsReview) {
-			estimate.hidden = true;
-			return;
+		
+		let overnightPrice = 0;
+		if (staying && overnightCount > 0) {
+			let pricePerNight = prices.overnight.over15;
+			if (overnightCount <= 5) pricePerNight = prices.overnight.upTo5;
+			else if (overnightCount <= 10) pricePerNight = prices.overnight.upTo10;
+			else if (overnightCount <= 15) pricePerNight = prices.overnight.upTo15;
+			overnightPrice = overnightCount * pricePerNight * dayCount;
 		}
-		const total = hallPrice + (sauna ? prices.sauna : 0) + overnightCount * prices.overnight;
+		
+		const saunaPrice = sauna ? prices.sauna * dayCount : 0;
+		const total = hallPrice + overnightPrice + saunaPrice;
+		
 		estimate.hidden = false;
 		estimateAmount.textContent = `${new Intl.NumberFormat(document.documentElement.lang || 'lv-LV').format(total)} EUR`;
 	};

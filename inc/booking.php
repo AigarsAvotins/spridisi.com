@@ -113,10 +113,20 @@ function spridisi_request_validate( $input ) {
 	if ( ! spridisi_request_valid_date( $data['start_date'] ) || $data['start_date'] < $today ) {
 		$errors['start_date'] = __( 'Norādi šodienas vai vēlāku sākuma datumu.', 'spridisi' );
 	}
-	if ( ! spridisi_request_valid_date( $data['end_date'] ) || ( ! isset( $errors['start_date'] ) && $data['end_date'] < $data['start_date'] ) ) {
-		$errors['end_date'] = __( 'Beigu datums nedrīkst būt agrāks par sākuma datumu.', 'spridisi' );
+	if ( ! spridisi_request_valid_date( $data['end_date'] ) || $data['end_date'] < $today ) {
+		$errors['end_date'] = __( 'Norādi šodienas vai vēlāku beigu datumu.', 'spridisi' );
 	}
-	if ( false === filter_var( $data['guests'], FILTER_VALIDATE_INT, array( 'options' => array( 'min_range' => 1 ) ) ) ) {
+	if ( ! isset( $errors['start_date'] ) && ! isset( $errors['end_date'] ) && $data['end_date'] <= $data['start_date'] ) {
+		$errors['end_date'] = __( 'Beigu datums jābūt vēlāks par sākuma datumu.', 'spridisi' );
+	}
+	
+	$is_other_event = 'other' === $data['event_type'];
+	$is_unknown_event = 'other' === $data['event_type'] && '' === trim( $data['event_other'] );
+	$guests_required = ! $is_other_event;
+	
+	if ( $guests_required && false === filter_var( $data['guests'], FILTER_VALIDATE_INT, array( 'options' => array( 'min_range' => 1 ) ) ) ) {
+		$errors['guests'] = __( 'Norādi veselu viesu skaitu, kas nav mazāks par 1.', 'spridisi' );
+	} elseif ( ! $guests_required && '' !== $data['guests'] && false === filter_var( $data['guests'], FILTER_VALIDATE_INT, array( 'options' => array( 'min_range' => 1 ) ) ) ) {
 		$errors['guests'] = __( 'Norādi veselu viesu skaitu, kas nav mazāks par 1.', 'spridisi' );
 	}
 	if ( '' !== $data['overnight_guests'] && false === filter_var( $data['overnight_guests'], FILTER_VALIDATE_INT, array( 'options' => array( 'min_range' => 0, 'max_range' => 40 ) ) ) ) {
@@ -424,8 +434,8 @@ function spridisi_request_form() {
 	spridisi_request_field( 'email', __( 'E-pasts', 'spridisi' ), 'email', true, array( 'autocomplete' => 'email', 'maxlength' => 254 ) );
 	spridisi_request_field( 'phone', __( 'Tālrunis', 'spridisi' ), 'tel', true, array( 'autocomplete' => 'tel', 'maxlength' => 60 ) );
 	echo '</fieldset><fieldset><legend>' . esc_html__( 'Datumi un viesi', 'spridisi' ) . '</legend><div class="request-dates">';
-	spridisi_request_field( 'start_date', __( 'Ierašanās vai pasākuma sākuma datums', 'spridisi' ), 'date', true, array( 'min' => $today ) );
-	spridisi_request_field( 'end_date', __( 'Izbraukšanas vai pasākuma beigu datums', 'spridisi' ), 'date', true, array( 'min' => $today ) );
+	spridisi_request_field( 'start_date', __( 'Ierašanās vai pasākuma sākuma datums', 'spridisi' ), 'date', true, array( 'min' => $today ), __( 'Ierašanās laiks no 16:00. Laiku var precizēt pieprasījumā.', 'spridisi' ) );
+	spridisi_request_field( 'end_date', __( 'Izbraukšanas vai pasākuma beigu datums', 'spridisi' ), 'date', true, array( 'min' => $today ), __( 'Izrakstīšanās laiks 12:00. Laiku var precizēt pieprasījumā.', 'spridisi' ) );
 	echo '</div>';
 	spridisi_request_field( 'guests', __( 'Plānotais viesu skaits', 'spridisi' ), 'number', true, array( 'min' => 1, 'step' => 1, 'inputmode' => 'numeric' ) );
 	echo '</fieldset><fieldset><legend>' . esc_html__( 'Pasākums', 'spridisi' ) . '</legend>';
@@ -575,7 +585,7 @@ function spridisi_request_assets() {
 		'email' => __( 'Norādi derīgu e-pasta adresi.', 'spridisi' ),
 		'phone' => __( 'Norādi derīgu tālruni, vajadzības gadījumā ar valsts kodu.', 'spridisi' ),
 		'past' => __( 'Norādi šodienas vai vēlāku sākuma datumu.', 'spridisi' ),
-		'end' => __( 'Beigu datums nedrīkst būt agrāks par sākuma datumu.', 'spridisi' ),
+		'end' => __( 'Beigu datums jābūt vēlāks par sākuma datumu.', 'spridisi' ),
 		'guests' => __( 'Norādi veselu viesu skaitu, kas nav mazāks par 1.', 'spridisi' ),
 		'overnightGuests' => __( 'Norādi veselu nakšņotāju skaitu no 0 līdz 40.', 'spridisi' ),
 		'overnightRequired' => __( 'Norādi nakšņotāju skaitu.', 'spridisi' ),
@@ -583,7 +593,17 @@ function spridisi_request_assets() {
 		'turnstileConfigured' => spridisi_request_turnstile_configured(),
 		'turnstileRequired' => __( 'Lūdzu, pabeidz drošības pārbaudi.', 'spridisi' ),
 		'spaces' => __( 'Izvēlies vismaz vienu telpu vai piedāvājumu.', 'spridisi' ),
-		'prices' => array( 'smallHall' => array( 'upTo15' => 150, 'upTo25' => 180 ), 'largeHall' => array( 'upTo30' => 250, 'upTo40' => 300, 'over40' => 350 ), 'wedding' => 400, 'sauna' => 80, 'overnight' => 12 ),
+		'prices' => array(
+			'smallHall' => 180,
+			'largeHall' => 350,
+			'overnight' => array(
+				'upTo5' => 15,
+				'upTo10' => 14,
+				'upTo15' => 13,
+				'over15' => 12,
+			),
+			'sauna' => 80,
+		),
 		'sending' => __( 'Nosūta…', 'spridisi' ),
 		'submit' => __( 'Nosūtīt', 'spridisi' ),
 	) );
