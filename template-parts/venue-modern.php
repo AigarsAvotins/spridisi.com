@@ -166,7 +166,7 @@ $section_content = spridisi_section_content( 'venue' );
 
 <?php
 /* Optional: Pievienot CSS un JS loaders */
-wp_enqueue_style( 'sections-modern', get_template_directory_uri() . '/assets/css/sections-modern.css' );
+wp_enqueue_style( 'sections-modern', get_template_directory_uri() . '/assets/css/sections-modern.css', array(), '1.1' );
 wp_enqueue_script( 'aos', 'https://unpkg.com/aos@next/dist/aos.umd.js', array(), '2.3.4', true );
 wp_add_inline_script( 'aos', "
 	document.addEventListener('DOMContentLoaded', function() {
