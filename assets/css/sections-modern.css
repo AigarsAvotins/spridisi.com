@@ -1,0 +1,514 @@
+/**
+ * Modernizētas Vidējās Sekcijas CSS un JavaScript
+ * 
+ * Šis fails satur gatavus koda fragmentus sekcijas modernizācijai
+ * Failu nosūtīt uz: assets/css/sections-modern.css
+ */
+
+/* ===================================
+   VENUE SECTION - Kartītu Sistēma
+   =================================== */
+
+.venue-cards-container {
+  margin: 3rem 0;
+  position: relative;
+}
+
+.venue-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2.5rem;
+  margin: 2rem 0;
+}
+
+.venue-card {
+  background: #f9f7f3;
+  border-radius: 12px;
+  padding: 2.5rem 2rem;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  border: 2px solid transparent;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+/* Top border accent */
+.venue-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  background: linear-gradient(90deg, #d4a574, #8b6f47);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.venue-card:hover::before {
+  transform: scaleX(1);
+}
+
+/* Icon */
+.venue-card__icon {
+  font-size: 3.5rem;
+  margin-bottom: 1rem;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.venue-card:hover .venue-card__icon {
+  transform: scale(1.1) rotate(5deg);
+}
+
+/* Title */
+.venue-card__title {
+  font-size: 1.75rem;
+  margin: 1rem 0;
+  color: #2a2a2a;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+/* Details list */
+.venue-card__details {
+  margin: 1.5rem 0;
+}
+
+.detail {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 1rem 0;
+  font-size: 0.95rem;
+  color: #555;
+  transition: transform 0.3s ease;
+}
+
+.detail:hover {
+  transform: translateX(5px);
+}
+
+.detail-icon {
+  font-size: 1.3rem;
+  min-width: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.detail-text {
+  line-height: 1.4;
+}
+
+.detail-text strong {
+  color: #d4a574;
+  font-weight: 600;
+}
+
+/* CTA Button */
+.venue-card__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+  color: #d4a574;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.venue-card__cta::after {
+  content: '→';
+  transition: transform 0.3s ease;
+}
+
+.venue-card__cta:hover::after {
+  transform: translateX(4px);
+}
+
+/* Hover state */
+.venue-card:hover {
+  transform: translateY(-12px);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+  border-color: #d4a574;
+  background: #fff;
+}
+
+/* Full width card (outdoor) */
+.venue-card--full {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg, #f9f7f3 0%, #ebe8e1 100%);
+}
+
+.venue-card--full:hover {
+  background: linear-gradient(135deg, #fff 0%, #f9f7f3 100%);
+}
+
+/* ===================================
+   ACCOMMODATION SECTION - Divi Kolonna
+   =================================== */
+
+.accommodation-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: center;
+}
+
+.accommodation__image {
+  overflow: hidden;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  transition: all 0.5s ease;
+}
+
+.accommodation__image:hover {
+  transform: scale(1.03);
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+}
+
+.accommodation-copy {
+  padding: 1rem;
+}
+
+.accommodation-copy h2 {
+  color: #2a2a2a;
+  font-size: 2.2rem;
+  margin: 1rem 0;
+  line-height: 1.2;
+}
+
+.accommodation-benefits {
+  margin: 2rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.benefit {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  padding: 0.75rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.benefit:hover {
+  background: rgba(212, 165, 116, 0.1);
+  padding-left: 1.25rem;
+}
+
+.benefit-icon {
+  font-size: 1.5rem;
+  min-width: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.benefit-text {
+  font-size: 0.95rem;
+  color: #555;
+  line-height: 1.5;
+}
+
+/* ===================================
+   SEKCIJU NUMERĀCIJA - Modernizēts
+   =================================== */
+
+.section-number-badge {
+  display: inline-block;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #d4a574;
+  position: relative;
+  padding-left: 2.5rem;
+  margin-bottom: 0.5rem;
+  letter-spacing: 1px;
+}
+
+.section-number-badge::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #d4a574, #c99968);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  color: white;
+  font-size: 0.9rem;
+  box-shadow: 0 4px 10px rgba(212, 165, 116, 0.3);
+  transition: all 0.3s ease;
+}
+
+.section-number-badge:hover::before {
+  transform: scale(1.15);
+  box-shadow: 0 6px 15px rgba(212, 165, 116, 0.5);
+}
+
+/* Timeline style (ja ir vairākas sekcijas) */
+.section-timeline {
+  position: relative;
+  padding: 2rem 0;
+}
+
+.section-timeline::before {
+  content: '';
+  position: absolute;
+  left: 1rem;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, #d4a574, transparent);
+}
+
+.section-timeline-item {
+  position: relative;
+  padding-left: 4rem;
+  margin-bottom: 3rem;
+}
+
+.section-timeline-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.5rem;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: white;
+  border: 3px solid #d4a574;
+  transition: all 0.3s ease;
+}
+
+.section-timeline-item:hover::before {
+  background: #d4a574;
+  box-shadow: 0 0 15px rgba(212, 165, 116, 0.5);
+}
+
+/* ===================================
+   SCROLL ANIMĀCIJAS (AOS integr.)
+   =================================== */
+
+.fade-up-animation {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.fade-up-animation.aos-animate {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.zoom-animation {
+  opacity: 0;
+  transform: scale(0.9);
+  transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.zoom-animation.aos-animate {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.slide-left-animation {
+  opacity: 0;
+  transform: translateX(-50px);
+  transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.slide-left-animation.aos-animate {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.slide-right-animation {
+  opacity: 0;
+  transform: translateX(50px);
+  transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.slide-right-animation.aos-animate {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* ===================================
+   RESPONSĪVS DIZAINS
+   =================================== */
+
+@media (max-width: 1024px) {
+  .accommodation-content {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .venue-card {
+    padding: 2rem 1.5rem;
+  }
+
+  .venue-card__title {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .venue-cards {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .venue-card {
+    padding: 1.75rem 1.25rem;
+  }
+
+  .venue-card__title {
+    font-size: 1.3rem;
+  }
+
+  .venue-card__icon {
+    font-size: 2.5rem;
+  }
+
+  .detail {
+    font-size: 0.9rem;
+  }
+
+  .accommodation-copy h2 {
+    font-size: 1.8rem;
+  }
+
+  .section-number-badge {
+    font-size: 0.9rem;
+    padding-left: 2rem;
+  }
+
+  .section-number-badge::before {
+    width: 1.75rem;
+    height: 1.75rem;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .venue-cards {
+    gap: 1rem;
+  }
+
+  .venue-card {
+    padding: 1.5rem 1rem;
+  }
+
+  .venue-card__title {
+    font-size: 1.1rem;
+  }
+
+  .venue-card__icon {
+    font-size: 2rem;
+  }
+
+  .detail {
+    gap: 0.5rem;
+    font-size: 0.85rem;
+  }
+
+  .accommodation-benefits {
+    gap: 0.75rem;
+  }
+
+  .benefit {
+    padding: 0.5rem;
+  }
+}
+
+/* ===================================
+   CUSTOM HOVER EFEKTI
+   =================================== */
+
+/* Smooth button ripple effect */
+.button-ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+.button-ripple::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(212, 165, 116, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.button-ripple:hover::after {
+  width: 300px;
+  height: 300px;
+}
+
+/* Text underline animation */
+.link-underline {
+  position: relative;
+  color: #d4a574;
+  text-decoration: none;
+}
+
+.link-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: #d4a574;
+  transition: width 0.3s ease;
+}
+
+.link-underline:hover::after {
+  width: 100%;
+}
+
+/* ===================================
+   DARK MODE SUPPORT (Future)
+   =================================== */
+
+@media (prefers-color-scheme: dark) {
+  .venue-card {
+    background: #2a2a2a;
+    color: #e0e0e0;
+  }
+
+  .venue-card__title {
+    color: #f0f0f0;
+  }
+
+  .detail-text {
+    color: #c0c0c0;
+  }
+
+  .detail-text strong {
+    color: #d4a574;
+  }
+
+  .accommodation-copy h2 {
+    color: #f0f0f0;
+  }
+
+  .benefit-text {
+    color: #c0c0c0;
+  }
+}
