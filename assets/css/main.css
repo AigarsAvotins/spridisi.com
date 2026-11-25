@@ -106,7 +106,7 @@ h3 { font-size: 1.75rem; }
 .venue__image .editorial-photo { object-position: 50% 75%; }
 .venue__image .photo-placeholder { background: linear-gradient(130deg, #b8c2ad, #dde0d2 60%, #c5ccbb); }
 .venue-hall__image { margin: 1.5rem 0 0; overflow: hidden; }
-.venue-hall__photo { display: block; width: 100%; max-width: 100%; max-height: 35rem; height: auto; object-fit: contain; object-position: left top; }
+.venue-hall__photo { display: block; width: 100%; max-width: 100%; height: auto; object-fit: contain; object-position: left top; }
 .image-index { position: absolute; top: 1.75rem; right: 1.75rem; padding: 0.5rem; font-size: 0.5625rem; color: var(--deep); background: var(--paper); }
 .editorial-layout { display: grid; align-items: center; gap: 2.75rem; }
 .accommodation { padding-top: 0; }
