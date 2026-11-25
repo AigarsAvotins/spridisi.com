@@ -21,7 +21,7 @@
 		<?php $header_contact_defaults = spridisi_default_contact_details(); $header_phone = get_theme_mod( 'spridisi_phone', $header_contact_defaults['phone'] ); $header_phone_digits = preg_replace( '/\D/', '', $header_phone ); ?>
 		<div class="header-contact">
 			<button class="header-contact__booking" type="button" aria-label="<?php esc_attr_e( 'Atvērt reģistrācijas formu', 'spridisi' ); ?>">
-				<span class="header-contact__icon" aria-hidden="true">📱</span>
+				<img src="<?php echo esc_url( get_template_directory_uri() . '/assets/images/Whatsapp.png' ); ?>" alt="WhatsApp" class="header-contact__icon">
 				<span class="header-contact__phone-text"><?php echo esc_html( $header_phone ); ?></span>
 			</button>
 		</div>

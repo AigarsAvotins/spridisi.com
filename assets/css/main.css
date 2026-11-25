@@ -59,7 +59,7 @@ h3 { font-size: 1.75rem; }
 .header-contact a:hover { text-decoration: underline; }
 .header-contact__booking { display: inline-flex; align-items: center; gap: 0.5rem; min-height: 2.75rem; padding: 0.5rem 1rem; background: #f5f5f5; color: var(--deep); border: 1px solid #e0e0e0; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: all 150ms ease; white-space: nowrap; }
 .header-contact__booking:hover { background: #efefef; border-color: var(--sand); }
-.header-contact__icon { font-size: 1.25rem; display: flex; align-items: center; }
+.header-contact__icon { width: 1.5rem; height: 1.5rem; display: flex; align-items: center; flex-shrink: 0; }
 .header-contact__phone-text { font-size: 0.875rem; font-weight: 600; }
 .header-booking { order: 2; margin-left: auto; }
 .logo-selija { display: flex; order: 20; margin-left: 0.75rem; margin-right: 0; flex-shrink: 0; align-items: center; background: red; padding: 0.5rem; }
