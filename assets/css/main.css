@@ -105,8 +105,8 @@ h3 { font-size: 1.75rem; }
 .venue__image { aspect-ratio: 1.25; }
 .venue__image .editorial-photo { object-position: 50% 75%; }
 .venue__image .photo-placeholder { background: linear-gradient(130deg, #b8c2ad, #dde0d2 60%, #c5ccbb); }
-.venue-hall__image { margin: 1.5rem 0 0; }
-.venue-hall__photo { display: block; width: auto; max-width: 100%; max-height: 35rem; height: auto; object-fit: contain; object-position: left top; }
+.venue-hall__image { margin: 1.5rem 0 0; overflow: hidden; }
+.venue-hall__photo { display: block; width: 100%; max-width: 100%; max-height: 35rem; height: auto; object-fit: contain; object-position: left top; }
 .image-index { position: absolute; top: 1.75rem; right: 1.75rem; padding: 0.5rem; font-size: 0.5625rem; color: var(--deep); background: var(--paper); }
 .editorial-layout { display: grid; align-items: center; gap: 2.75rem; }
 .accommodation { padding-top: 0; }
@@ -309,6 +309,8 @@ h3 { font-size: 1.75rem; }
 
 @media (prefers-reduced-motion: no-preference) {
 	.is-revealed { animation: reveal 650ms ease-out both; }
+	.venue-hall__photo { transform: scale(1); transition: transform 700ms cubic-bezier(0.2, 0.65, 0.3, 1); }
+	.venue-hall__image:hover .venue-hall__photo { transform: scale(1.035); }
 	@keyframes reveal { from { opacity: 0.35; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 	.hero__image { transform-origin: 50% 50%; animation: hero-image-in 20s linear infinite alternate; }
 	@keyframes hero-image-in {

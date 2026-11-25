@@ -8,7 +8,7 @@
 					<h3><?php echo esc_html( spridisi_homepage_text( 'venue', $hall . '-title' ) ); ?></h3>
 					<div class="venue-hall__description"><?php echo wp_kses_post( $hall_content ); ?></div>
 					<?php if ( ! empty( $hall_image['url'] ) ) : ?>
-						<figure class="venue-hall__image"><?php spridisi_homepage_photo( 'venue', 'venue-hall__photo', 'large', false, $hall . '-image' ); ?></figure>
+						<figure class="venue-hall__image" data-reveal><?php spridisi_homepage_photo( 'venue', 'venue-hall__photo', 'large', false, $hall . '-image' ); ?></figure>
 					<?php endif; ?>
 				</div>
 			<?php endif; ?>
