@@ -35,5 +35,8 @@
 			<?php endif; ?>
 		</div>
 		<a class="button button--small header-booking" href="<?php echo esc_url( spridisi_reservation_link() ?: spridisi_home_anchor( 'kontakti' ) ); ?>"><?php echo esc_html( spridisi_reservation_cta_label() ); ?><span aria-hidden="true">↗</span></a>
+		<a class="logo-selija" href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home" aria-label="<?php esc_attr_e( 'Sēlija logo', 'spridisi' ); ?>">
+			<img src="<?php echo esc_url( get_template_directory_uri() . '/assets/images/Designer.png' ); ?>" alt="<?php esc_attr_e( 'Sēlija logo', 'spridisi' ); ?>" class="logo-selija__image">
+		</a>
 	</div>
 </header>
