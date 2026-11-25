@@ -79,7 +79,7 @@ function spridisi_enqueue_assets() {
 			array(
 				'strategy'  => 'defer',
 				'in_footer' => true,
-			}
+			)
 		);
 	}
 }
