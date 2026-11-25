@@ -57,7 +57,7 @@ h3 { font-size: 1.75rem; }
 .header-contact { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.75rem; order: 2; }
 .header-contact a { display: inline-flex; min-height: 2.75rem; align-items: center; color: inherit; font-size: 0.75rem; text-decoration: none; white-space: nowrap; }
 .header-contact a:hover { text-decoration: underline; }
-.header-contact__text { display: inline-flex; align-items: center; color: var(--paper); font-size: 0.875rem; font-weight: 600; white-space: nowrap; }
+.header-contact__text { display: inline-flex; align-items: center; color: var(--sand); font-size: 0.75rem; font-weight: 600; white-space: nowrap; }
 .logo-selija { display: flex; order: 20; margin-left: 0.75rem; margin-right: 0; flex-shrink: 0; align-items: center; background: red; padding: 0.5rem; }
 .logo-selija__image { height: 2.5rem; width: auto; opacity: 0.85; transition: opacity 200ms ease; }
 .logo-selija:hover .logo-selija__image { opacity: 1; }
