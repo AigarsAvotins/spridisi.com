@@ -58,7 +58,6 @@ h3 { font-size: 1.75rem; }
 .header-contact a { display: inline-flex; min-height: 2.75rem; align-items: center; color: inherit; font-size: 0.75rem; text-decoration: none; white-space: nowrap; }
 .header-contact a:hover { text-decoration: underline; }
 .header-contact__text { display: inline-flex; align-items: center; color: var(--deep); font-size: 0.875rem; font-weight: 600; white-space: nowrap; }
-.header-booking { order: 2; margin-left: auto; }
 .logo-selija { display: flex; order: 20; margin-left: 0.75rem; margin-right: 0; flex-shrink: 0; align-items: center; background: red; padding: 0.5rem; }
 .logo-selija__image { height: 2.5rem; width: auto; opacity: 0.85; transition: opacity 200ms ease; }
 .logo-selija:hover .logo-selija__image { opacity: 1; }
@@ -297,7 +296,6 @@ h3 { font-size: 1.75rem; }
 	.primary-navigation .sub-menu { position: absolute; top: 100%; left: -1rem; width: 12rem; padding: 0.5rem 1rem; background: var(--deep); visibility: hidden; }
 	.primary-navigation li:hover > .sub-menu, .primary-navigation li:focus-within > .sub-menu { visibility: visible; }
 	.header-contact { order: 3; flex: 0 0 auto; gap: 1rem; }
-	.header-booking { order: 4; flex: 0 1 auto; margin-left: 0; }
 	.hero h1 { font-size: 6.25rem; }
 	.hero__content { padding-top: max(11rem, calc(var(--spridisi-header-height, 7rem) + 3rem)); }
 	.hero__eyebrow { margin-bottom: 2.5rem; }
@@ -378,6 +376,5 @@ h3 { font-size: 1.75rem; }
 @media (max-width: 37.5rem) {
 	.admin-bar.home .site-header.is-scrolled { top: 0; }
 	.header-inner { gap: 0.75rem; }
-	.header-booking { gap: 0.75rem; padding-inline: 0.75rem; }
 	.logo-selija { display: none !important; }
 }

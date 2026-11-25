@@ -33,6 +33,5 @@
 				</nav>
 			<?php endif; ?>
 		</div>
-		<a class="button button--small header-booking" href="<?php echo esc_url( spridisi_reservation_link() ?: spridisi_home_anchor( 'kontakti' ) ); ?>"><?php echo esc_html( spridisi_reservation_cta_label() ); ?><span aria-hidden="true">↗</span></a>
 	</div>
 </header>

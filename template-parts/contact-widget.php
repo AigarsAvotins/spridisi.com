@@ -9,7 +9,7 @@ $phone_digits = preg_replace( '/\D/', '', $phone );
 $reservation_link = spridisi_reservation_link();
 $site_email = get_option( 'admin_email' );
 ?>
-<div class="contact-widget" id="contact-widget" data-delay="7000" data-email="<?php echo esc_attr( $site_email ); ?>">
+<div class="contact-widget" id="contact-widget" data-delay="10000" data-email="<?php echo esc_attr( $site_email ); ?>">
 	<div class="contact-widget__menu" id="contact-widget-menu">
 		<div class="contact-widget__header">
 			<h3><?php esc_html_e( 'Kā varam palīdzēt?', 'spridisi' ); ?></h3>
