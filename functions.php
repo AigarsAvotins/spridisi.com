@@ -47,19 +47,20 @@ function spridisi_enqueue_assets() {
 	$script_path    = get_theme_file_path( '/assets/js/main.js' );
 	$style_version  = is_file( $style_path ) ? (string) filemtime( $style_path ) : $theme_version;
 	$script_version = is_file( $script_path ) ? (string) filemtime( $script_path ) : $theme_version;
+	$force_refresh  = '20261125'; // Force cache refresh
 
 	wp_enqueue_style(
 		'spridisi-main',
 		esc_url( get_theme_file_uri( '/assets/css/main.css' ) ),
 		array(),
-		$style_version
+		$style_version . '-' . $force_refresh
 	);
 
 	wp_enqueue_script(
 		'spridisi-main',
 		esc_url( get_theme_file_uri( '/assets/js/main.js' ) ),
 		array(),
-		$script_version,
+		$script_version . '-' . $force_refresh,
 		array(
 			'strategy'  => 'defer',
 			'in_footer' => true,
@@ -74,11 +75,11 @@ function spridisi_enqueue_assets() {
 			'spridisi-contact-widget',
 			esc_url( get_theme_file_uri( '/assets/js/contact-widget.js' ) ),
 			array(),
-			$widget_script_version,
+			$widget_script_version . '-' . $force_refresh,
 			array(
 				'strategy'  => 'defer',
 				'in_footer' => true,
-			)
+			}
 		);
 	}
 }
