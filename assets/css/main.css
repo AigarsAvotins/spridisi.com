@@ -339,8 +339,8 @@ h3 { font-size: 1.75rem; }
 
 /* Contact Widget */
 .contact-widget { position: fixed; bottom: 2rem; right: 2rem; z-index: 999; font-family: var(--sans); }
-.contact-widget__toggle { display: flex; align-items: center; gap: 0.75rem; min-height: 3.5rem; padding: 0.75rem 1.5rem; color: var(--paper); background: var(--sand); border: none; border-radius: 2rem; font-weight: 600; font-size: 0.875rem; cursor: pointer; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); transition: all 200ms ease; }
-.contact-widget__toggle:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3); }
+.contact-widget__toggle { display: flex; align-items: center; justify-content: center; gap: 0.75rem; height: 3.5rem; padding: 0.875rem 1.5rem; color: var(--deep); background: var(--sand); border: 1px solid var(--sand); border-radius: 0.5rem; font-weight: 600; font-size: 0.875rem; line-height: 1; white-space: nowrap; cursor: pointer; transition: all 150ms ease; }
+.contact-widget__toggle:hover { background: #d4b896; border-color: #d4b896; }
 .contact-widget__icon { font-size: 1.25rem; }
 .contact-widget__menu { position: absolute; bottom: 100%; right: 0; margin-bottom: 1rem; width: 320px; background: var(--paper); border-radius: 0.75rem; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15); overflow: hidden; animation: slideUp 300ms ease; }
 .contact-widget__menu[hidden] { display: none !important; }
