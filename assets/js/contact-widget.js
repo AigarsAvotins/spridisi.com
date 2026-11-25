@@ -63,21 +63,7 @@ document.addEventListener( 'DOMContentLoaded', function() {
 			toggle.setAttribute( 'aria-expanded', 'false' );
 		}
 	} );
-
-	// Handle form submission
-	const bookingForm = document.getElementById( 'widget-booking-form' );
-	if ( bookingForm ) {
-		bookingForm.addEventListener( 'submit', function( e ) {
-			e.preventDefault();
-			const formData = new FormData( bookingForm );
-			const data = Object.fromEntries( formData );
-			
-			// Send to WhatsApp with form data
-			const phone = data.phone || '+37126344495';
-			const message = `Sveiki! Mani sauc ${data.name}. Mēs gribam apmeklēt Sprīdīši.\n\nE-pasts: ${data.email}\nTālrunis: ${data.phone}\nVēlamie datumi: ${data.dates}\n\nPapildu info: ${data.message}`;
-			const whatsappUrl = `https://wa.me/${phone.replace( /\D/g, '' )}?text=${encodeURIComponent( message )}`;
-			window.open( whatsappUrl, '_blank' );
-			
+} );
 			// Reset form
 			bookingForm.reset();
 			form.setAttribute( 'hidden', '' );
