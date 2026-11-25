@@ -4,8 +4,6 @@
  *
  * @package Spridisi
  */
-$phone = get_theme_mod( 'spridisi_phone', '+37126344495' );
-$phone_digits = preg_replace( '/\D/', '', $phone );
 ?>
 <div class="contact-widget" id="contact-widget" data-delay="7000">
 	<button class="contact-widget__toggle" aria-expanded="false" aria-controls="contact-widget-menu">
@@ -16,12 +14,6 @@ $phone_digits = preg_replace( '/\D/', '', $phone );
 		<div class="contact-widget__header">
 			<h3><?php esc_html_e( 'Kā varam palīdzēt?', 'spridisi' ); ?></h3>
 			<button class="contact-widget__close" aria-label="<?php esc_attr_e( 'Aizvērt', 'spridisi' ); ?>">×</button>
-		</div>
-		<div class="contact-widget__content">
-			<a href="<?php echo esc_url( 'https://wa.me/' . $phone_digits ); ?>" target="_blank" rel="noopener noreferrer" class="contact-widget__whatsapp">
-				<img src="<?php echo esc_url( get_template_directory_uri() . '/assets/images/Whatsapp.png' ); ?>" alt="WhatsApp" class="contact-widget__whatsapp-icon">
-				<span class="contact-widget__whatsapp-text"><?php echo esc_html( $phone ); ?></span>
-			</a>
 		</div>
 		<div class="contact-widget__form">
 			<form class="contact-widget__form-content" id="widget-booking-form">
