@@ -11,7 +11,11 @@ document.addEventListener( 'DOMContentLoaded', function() {
 	const toggle = widget.querySelector( '.contact-widget__toggle' );
 	const menu = widget.querySelector( '.contact-widget__menu' );
 	const closeBtn = widget.querySelector( '.contact-widget__close' );
+	const messageToggle = widget.querySelector( '.contact-widget__message-toggle' );
+	const messageForm = widget.querySelector( '.contact-widget__message-form' );
+	const messageClose = widget.querySelector( '.contact-widget__message-close' );
 	const delay = parseInt( widget.dataset.delay ) || 7000;
+	const siteEmail = widget.dataset.email;
 
 	// Hide widget initially
 	widget.setAttribute( 'hidden', '' );
@@ -53,6 +57,61 @@ document.addEventListener( 'DOMContentLoaded', function() {
 		menu.setAttribute( 'hidden', '' );
 		toggle.setAttribute( 'aria-expanded', 'false' );
 	} );
+
+	// Toggle message form
+	messageToggle.addEventListener( 'click', function() {
+		const isExpanded = messageToggle.getAttribute( 'aria-expanded' ) === 'true';
+		messageToggle.setAttribute( 'aria-expanded', ! isExpanded );
+		if ( isExpanded ) {
+			messageForm.setAttribute( 'hidden', '' );
+		} else {
+			messageForm.removeAttribute( 'hidden' );
+		}
+	} );
+
+	// Close message form
+	messageClose.addEventListener( 'click', function() {
+		messageForm.setAttribute( 'hidden', '' );
+		messageToggle.setAttribute( 'aria-expanded', 'false' );
+	} );
+
+	// Handle message form submission
+	const messageFormElement = document.getElementById( 'widget-message-form' );
+	if ( messageFormElement ) {
+		messageFormElement.addEventListener( 'submit', function( e ) {
+			e.preventDefault();
+			const formData = new FormData( messageFormElement );
+			const data = Object.fromEntries( formData );
+
+			// Send email via AJAX
+			fetch( window.location.href, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/x-www-form-urlencoded',
+				},
+				body: new URLSearchParams( {
+					action: 'send_contact_message',
+					name: data.name,
+					email: data.email,
+					message: data.message,
+					nonce: window.spridisiNonce || '',
+				} )
+			} )
+			.then( function( response ) {
+				return response.text();
+			} )
+			.then( function( result ) {
+				alert( 'Ziņa nosūtīta! Mēs ar jums sazināsimies drīz.' );
+				messageFormElement.reset();
+				messageForm.setAttribute( 'hidden', '' );
+				messageToggle.setAttribute( 'aria-expanded', 'false' );
+			} )
+			.catch( function( error ) {
+				alert( 'Kļūda sūtot ziņu. Mēģiniet vēlreiz.' );
+				console.error( error );
+			} );
+		} );
+	}
 
 	// Close menu when clicking outside
 	document.addEventListener( 'click', function( e ) {

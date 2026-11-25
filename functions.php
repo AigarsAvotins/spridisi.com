@@ -85,6 +85,42 @@ function spridisi_enqueue_assets() {
 }
 add_action( 'wp_enqueue_scripts', 'spridisi_enqueue_assets' );
 
+// Contact widget - send message via email
+function spridisi_send_contact_message() {
+	// Check if this is a POST request
+	if ( $_SERVER['REQUEST_METHOD'] !== 'POST' ) {
+		return;
+	}
+
+	// Check for required fields
+	if ( empty( $_POST['name'] ) || empty( $_POST['email'] ) || empty( $_POST['message'] ) ) {
+		wp_die( 'Missing required fields' );
+	}
+
+	$name = sanitize_text_field( $_POST['name'] );
+	$email = sanitize_email( $_POST['email'] );
+	$message = sanitize_textarea_field( $_POST['message'] );
+	$admin_email = get_option( 'admin_email' );
+
+	// Compose email
+	$subject = sprintf( 'Juna ziņa no %s', $name );
+	$body = sprintf( "Vārds: %s\nE-pasts: %s\n\nZiņa:\n%s", $name, $email, $message );
+	$headers = array( 'Content-Type: text/plain; charset=UTF-8', 'From: ' . $email );
+
+	// Send email
+	if ( wp_mail( $admin_email, $subject, $body, $headers ) ) {
+		wp_die( 'success' );
+	} else {
+		wp_die( 'error' );
+	}
+}
+
+// Hook for frontend form submission
+if ( isset( $_POST['action'] ) && $_POST['action'] === 'send_contact_message' ) {
+	add_action( 'wp', 'spridisi_send_contact_message', 1 );
+	spridisi_send_contact_message();
+}
+
 // SEO: Add meta tags and structured data
 function spridisi_add_meta_tags() {
 	$site_title = get_bloginfo( 'name' );
