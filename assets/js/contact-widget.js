@@ -3,6 +3,31 @@
  */
 
 document.addEventListener( 'DOMContentLoaded', function() {
+	// Header contact booking button
+	const headerBookingBtn = document.querySelector( '.header-contact__booking' );
+	if ( headerBookingBtn ) {
+		headerBookingBtn.addEventListener( 'click', function() {
+			const widget = document.getElementById( 'contact-widget' );
+			if ( widget ) {
+				const toggle = widget.querySelector( '.contact-widget__toggle' );
+				const menu = widget.querySelector( '.contact-widget__menu' );
+				const form = widget.querySelector( '.contact-widget__form' );
+				const optionsContent = widget.querySelector( '.contact-widget__content' );
+				
+				// Show widget menu and open form
+				toggle.setAttribute( 'aria-expanded', 'true' );
+				menu.removeAttribute( 'hidden' );
+				optionsContent.setAttribute( 'hidden', '' );
+				form.removeAttribute( 'hidden' );
+				
+				// Scroll to widget if on mobile/tablet
+				if ( window.innerWidth < 768 ) {
+					widget.scrollIntoView( { behavior: 'smooth', block: 'nearest' } );
+				}
+			}
+		} );
+	}
+
 	const widget = document.getElementById( 'contact-widget' );
 	if ( ! widget ) {
 		return;
