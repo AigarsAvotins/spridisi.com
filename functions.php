@@ -65,6 +65,22 @@ function spridisi_enqueue_assets() {
 			'in_footer' => true,
 		)
 	);
+
+	// Contact widget script (only on homepage)
+	if ( is_front_page() ) {
+		$widget_script_path = get_theme_file_path( '/assets/js/contact-widget.js' );
+		$widget_script_version = is_file( $widget_script_path ) ? (string) filemtime( $widget_script_path ) : $theme_version;
+		wp_enqueue_script(
+			'spridisi-contact-widget',
+			esc_url( get_theme_file_uri( '/assets/js/contact-widget.js' ) ),
+			array(),
+			$widget_script_version,
+			array(
+				'strategy'  => 'defer',
+				'in_footer' => true,
+			)
+		);
+	}
 }
 add_action( 'wp_enqueue_scripts', 'spridisi_enqueue_assets' );
 

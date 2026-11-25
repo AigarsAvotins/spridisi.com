@@ -17,6 +17,7 @@ get_header();
 	get_template_part( 'template-parts/history' );
 	get_template_part( 'template-parts/gallery' );
 	get_template_part( 'template-parts/contact' );
+	get_template_part( 'template-parts/contact-widget' );
 	?>
 </main>
 <?php
