@@ -8,7 +8,6 @@ document.addEventListener( 'DOMContentLoaded', function() {
 		return;
 	}
 
-	const toggle = widget.querySelector( '.contact-widget__toggle' );
 	const menu = widget.querySelector( '.contact-widget__menu' );
 	const closeBtn = widget.querySelector( '.contact-widget__close' );
 	const messageToggle = widget.querySelector( '.contact-widget__message-toggle' );
@@ -31,7 +30,6 @@ document.addEventListener( 'DOMContentLoaded', function() {
 	if ( headerBookingBtn ) {
 		headerBookingBtn.addEventListener( 'click', function() {
 			// Show widget menu
-			toggle.setAttribute( 'aria-expanded', 'true' );
 			menu.removeAttribute( 'hidden' );
 			
 			// Scroll to widget if on mobile/tablet
@@ -41,21 +39,9 @@ document.addEventListener( 'DOMContentLoaded', function() {
 		} );
 	}
 
-	// Toggle menu
-	toggle.addEventListener( 'click', function() {
-		const isExpanded = toggle.getAttribute( 'aria-expanded' ) === 'true';
-		toggle.setAttribute( 'aria-expanded', ! isExpanded );
-		if ( isExpanded ) {
-			menu.setAttribute( 'hidden', '' );
-		} else {
-			menu.removeAttribute( 'hidden' );
-		}
-	} );
-
 	// Close menu
 	closeBtn.addEventListener( 'click', function() {
 		menu.setAttribute( 'hidden', '' );
-		toggle.setAttribute( 'aria-expanded', 'false' );
 	} );
 
 	// Toggle message form
@@ -117,7 +103,6 @@ document.addEventListener( 'DOMContentLoaded', function() {
 	document.addEventListener( 'click', function( e ) {
 		if ( ! widget.contains( e.target ) && ! menu.hasAttribute( 'hidden' ) ) {
 			menu.setAttribute( 'hidden', '' );
-			toggle.setAttribute( 'aria-expanded', 'false' );
 		}
 	} );
 } );

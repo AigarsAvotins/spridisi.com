@@ -10,11 +10,7 @@ $reservation_link = spridisi_reservation_link();
 $site_email = get_option( 'admin_email' );
 ?>
 <div class="contact-widget" id="contact-widget" data-delay="7000" data-email="<?php echo esc_attr( $site_email ); ?>">
-	<button class="contact-widget__toggle" aria-expanded="false" aria-controls="contact-widget-menu">
-		<span class="contact-widget__icon" aria-hidden="true">💬</span>
-		<span class="contact-widget__label"><?php esc_html_e( 'Sazinies ar mums', 'spridisi' ); ?></span>
-	</button>
-	<div class="contact-widget__menu" id="contact-widget-menu" hidden>
+	<div class="contact-widget__menu" id="contact-widget-menu">
 		<div class="contact-widget__header">
 			<h3><?php esc_html_e( 'Kā varam palīdzēt?', 'spridisi' ); ?></h3>
 			<button class="contact-widget__close" aria-label="<?php esc_attr_e( 'Aizvērt', 'spridisi' ); ?>">×</button>
