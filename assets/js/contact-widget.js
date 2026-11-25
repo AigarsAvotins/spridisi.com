@@ -25,20 +25,6 @@ document.addEventListener( 'DOMContentLoaded', function() {
 		widget.style.animation = 'slideUp 400ms ease';
 	}, delay );
 
-	// Header contact booking button
-	const headerBookingBtn = document.querySelector( '.header-contact__booking' );
-	if ( headerBookingBtn ) {
-		headerBookingBtn.addEventListener( 'click', function() {
-			// Show widget menu
-			menu.removeAttribute( 'hidden' );
-			
-			// Scroll to widget if on mobile/tablet
-			if ( window.innerWidth < 768 ) {
-				widget.scrollIntoView( { behavior: 'smooth', block: 'nearest' } );
-			}
-		} );
-	}
-
 	// Close menu
 	closeBtn.addEventListener( 'click', function() {
 		menu.setAttribute( 'hidden', '' );

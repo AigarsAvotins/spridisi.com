@@ -20,10 +20,7 @@
 		<a class="wordmark" href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home" aria-label="<?php esc_attr_e( 'Sprīdīši — sākums', 'spridisi' ); ?>"><?php esc_html_e( 'SPRĪDĪŠI', 'spridisi' ); ?><span><?php esc_html_e( 'VECSĒLPILS · SĒLIJA', 'spridisi' ); ?></span></a>
 		<?php $header_contact_defaults = spridisi_default_contact_details(); $header_phone = get_theme_mod( 'spridisi_phone', $header_contact_defaults['phone'] ); $header_phone_digits = preg_replace( '/\D/', '', $header_phone ); ?>
 		<div class="header-contact">
-			<button class="header-contact__booking" type="button" aria-label="<?php esc_attr_e( 'Atvērt reģistrācijas formu', 'spridisi' ); ?>">
-				<img src="<?php echo esc_url( get_template_directory_uri() . '/assets/images/Whatsapp.png' ); ?>" alt="WhatsApp" class="header-contact__icon">
-				<span class="header-contact__phone-text"><?php echo esc_html( $header_phone ); ?></span>
-			</button>
+			<span class="header-contact__text"><?php echo esc_html( $header_phone ); ?></span>
 		</div>
 		<button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-menu" hidden><span class="menu-toggle__lines" aria-hidden="true"></span><span class="menu-toggle__label"><?php esc_html_e( 'Izvēlne', 'spridisi' ); ?></span></button>
 		<div id="primary-menu" class="primary-navigation">
