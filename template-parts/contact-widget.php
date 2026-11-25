@@ -16,8 +16,8 @@ $site_email = get_option( 'admin_email' );
 			<button class="contact-widget__close" aria-label="<?php esc_attr_e( 'Aizvērt', 'spridisi' ); ?>">×</button>
 		</div>
 		<div class="contact-widget__content">
-			<a href="tel:<?php echo esc_attr( preg_replace( '/[^0-9+]/', '', $phone ) ); ?>" class="contact-widget__option">
-				<img src="<?php echo esc_url( get_template_directory_uri() . '/assets/images/Whatsapp.png' ); ?>" alt="Tel" class="contact-widget__option-icon">
+			<a href="https://wa.me/<?php echo esc_attr( preg_replace( '/[^0-9+]/', '', $phone ) ); ?>" class="contact-widget__option" target="_blank" rel="noopener noreferrer">
+				<img src="<?php echo esc_url( get_template_directory_uri() . '/assets/images/Whatsapp.png' ); ?>" alt="WhatsApp" class="contact-widget__option-icon">
 				<span class="contact-widget__option-text"><?php echo esc_html( $phone ); ?></span>
 			</a>
 			<a href="<?php echo esc_url( $reservation_link ); ?>" class="contact-widget__option">
