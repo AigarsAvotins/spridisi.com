@@ -91,6 +91,10 @@ h3 { font-size: 1.75rem; }
 .section-content { max-width: 48rem; margin-block: 1.5rem; }
 .editorial-layout > *, .introduction__layout > *, .contact__layout > *, .footer-grid > *, .section-heading > *, .experience-grid > *, .timeline > *, .header-inner > * { min-width: 0; }
 .venue { padding-top: 0; }
+.venue-halls { display: grid; gap: 1.5rem; margin-top: 1.5rem; }
+.venue-hall { max-width: none; margin: 0; }
+.venue-hall h3 { margin-bottom: 0.75rem; }
+.venue__image { margin-top: 2.5rem; }
 .photo-frame { position: relative; overflow: hidden; background: #e0e1d7; }
 .photo-placeholder { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #677362; background: linear-gradient(145deg, #d6dacd, #e6e5dc 55%, #cbd1c4); }
 .photo-placeholder::before { position: absolute; inset: 1rem; content: ''; border: 1px solid rgb(75 91 70 / 16%); }
@@ -245,6 +249,7 @@ h3 { font-size: 1.75rem; }
 	.introduction__layout > .section-kicker { padding-top: 0.75rem; }
 	.introduction__copy { margin-left: 4rem; margin-top: 2rem; }
 	.venue { padding-top: 0; }
+	.venue-halls { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2.5rem; }
 	.venue__image { aspect-ratio: 2.15; }
 	.accommodation { padding-top: 0; }
 	.editorial-layout { grid-template-columns: 1.15fr 1fr; gap: 4rem; }
