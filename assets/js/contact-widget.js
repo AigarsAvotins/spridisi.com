@@ -11,14 +11,10 @@ document.addEventListener( 'DOMContentLoaded', function() {
 			if ( widget ) {
 				const toggle = widget.querySelector( '.contact-widget__toggle' );
 				const menu = widget.querySelector( '.contact-widget__menu' );
-				const form = widget.querySelector( '.contact-widget__form' );
-				const optionsContent = widget.querySelector( '.contact-widget__content' );
 				
-				// Show widget menu and open form
+				// Show widget menu
 				toggle.setAttribute( 'aria-expanded', 'true' );
 				menu.removeAttribute( 'hidden' );
-				optionsContent.setAttribute( 'hidden', '' );
-				form.removeAttribute( 'hidden' );
 				
 				// Scroll to widget if on mobile/tablet
 				if ( window.innerWidth < 768 ) {
@@ -36,9 +32,6 @@ document.addEventListener( 'DOMContentLoaded', function() {
 	const toggle = widget.querySelector( '.contact-widget__toggle' );
 	const menu = widget.querySelector( '.contact-widget__menu' );
 	const closeBtn = widget.querySelector( '.contact-widget__close' );
-	const formToggle = widget.querySelector( '.contact-widget__form-toggle' );
-	const form = widget.querySelector( '.contact-widget__form' );
-	const optionsContent = widget.querySelector( '.contact-widget__content' );
 	const delay = parseInt( widget.dataset.delay ) || 7000;
 
 	// Show widget after delay
@@ -61,18 +54,6 @@ document.addEventListener( 'DOMContentLoaded', function() {
 	closeBtn.addEventListener( 'click', function() {
 		menu.setAttribute( 'hidden', '' );
 		toggle.setAttribute( 'aria-expanded', 'false' );
-	} );
-
-	// Toggle form
-	formToggle.addEventListener( 'click', function() {
-		const isFormVisible = ! form.hasAttribute( 'hidden' );
-		if ( isFormVisible ) {
-			form.setAttribute( 'hidden', '' );
-			optionsContent.removeAttribute( 'hidden' );
-		} else {
-			optionsContent.setAttribute( 'hidden', '' );
-			form.removeAttribute( 'hidden' );
-		}
 	} );
 
 	// Close menu when clicking outside

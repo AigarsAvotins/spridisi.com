@@ -4,6 +4,8 @@
  *
  * @package Spridisi
  */
+$phone = get_theme_mod( 'spridisi_phone', '+37126344495' );
+$phone_digits = preg_replace( '/\D/', '', $phone );
 ?>
 <div class="contact-widget" id="contact-widget" data-delay="7000">
 	<button class="contact-widget__toggle" aria-expanded="false" aria-controls="contact-widget-menu">
@@ -16,16 +18,12 @@
 			<button class="contact-widget__close" aria-label="<?php esc_attr_e( 'Aizvērt', 'spridisi' ); ?>">×</button>
 		</div>
 		<div class="contact-widget__content">
-			<a href="<?php echo esc_url( 'https://wa.me/' . preg_replace( '/\D/', '', get_theme_mod( 'spridisi_phone', '+37126344495' ) ) ); ?>" target="_blank" rel="noopener noreferrer" class="contact-widget__option contact-widget__whatsapp">
-				<span class="contact-widget__option-icon" aria-hidden="true">📱</span>
-				<span class="contact-widget__option-text"><?php esc_html_e( 'WhatsApp', 'spridisi' ); ?></span>
+			<a href="<?php echo esc_url( 'https://wa.me/' . $phone_digits ); ?>" target="_blank" rel="noopener noreferrer" class="contact-widget__option contact-widget__whatsapp">
+				<span class="contact-widget__option-phone"><?php echo esc_html( $phone ); ?></span>
+				<span class="contact-widget__option-whatsapp-logo" aria-hidden="true">📱</span>
 			</a>
-			<button class="contact-widget__option contact-widget__form-toggle" type="button">
-				<span class="contact-widget__option-icon" aria-hidden="true">📋</span>
-				<span class="contact-widget__option-text"><?php esc_html_e( 'Rezervācijas forma', 'spridisi' ); ?></span>
-			</button>
 		</div>
-		<div class="contact-widget__form" hidden>
+		<div class="contact-widget__form">
 			<form class="contact-widget__form-content" id="widget-booking-form">
 				<div class="contact-widget__form-group">
 					<label for="widget-name"><?php esc_html_e( 'Vārds', 'spridisi' ); ?></label>
