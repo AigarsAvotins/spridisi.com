@@ -93,6 +93,21 @@ function spridisi_request_validate( $input ) {
 		$data[ $key ] = spridisi_request_input( $input, $key );
 	}
 	$data['information'] = spridisi_request_input( $input, 'information', true );
+	
+	// Log all received form data for debugging
+	error_log( 'FORM VALIDATION - Received data: ' . wp_json_encode( array(
+		'name' => $data['name'],
+		'email' => $data['email'],
+		'phone' => $data['phone'],
+		'start_date' => $data['start_date'],
+		'end_date' => $data['end_date'],
+		'guests' => $data['guests'],
+		'overnight_guests' => $data['overnight_guests'],
+		'event_type' => $data['event_type'],
+		'information_length' => strlen( $data['information'] ),
+		'spaces' => $data['spaces'] ?? array(),
+	) ) );
+	
 	$data['consent'] = isset( $input['consent'] ) && '1' === $input['consent'];
 	$spaces = isset( $input['spaces'] ) && is_array( $input['spaces'] ) ? $input['spaces'] : array();
 	$data['spaces'] = array_values( array_unique( array_filter( $spaces, 'is_string' ) ) );
@@ -157,6 +172,13 @@ function spridisi_request_validate( $input ) {
 	if ( ! $data['consent'] ) {
 		$errors['consent'] = __( 'Lai nosūtītu pieprasījumu, nepieciešama piekrišana datu apstrādei.', 'spridisi' );
 	}
+	
+	if ( $errors ) {
+		error_log( 'FORM VALIDATION - Errors found: ' . wp_json_encode( $errors ) );
+	} else {
+		error_log( 'FORM VALIDATION - No errors, ready to send email' );
+	}
+	
 	return array( 'values' => $data, 'errors' => $errors );
 }
 
@@ -228,8 +250,24 @@ function spridisi_request_rate_allowed() {
 function spridisi_request_send_mail( $data, $page_id ) {
 	$recipient = sanitize_email( 'info@spridisi.com' );
 	if ( ! is_email( $recipient ) ) {
+		error_log( 'BOOKING: Invalid recipient email: ' . $recipient );
 		return false;
 	}
+	
+	// Log incoming form data for debugging
+	error_log( 'BOOKING FORM DATA: ' . wp_json_encode( array(
+		'name' => $data['name'] ?? '',
+		'email' => $data['email'] ?? '',
+		'phone' => $data['phone'] ?? '',
+		'start_date' => $data['start_date'] ?? '',
+		'end_date' => $data['end_date'] ?? '',
+		'guests' => $data['guests'] ?? '',
+		'overnight_guests' => $data['overnight_guests'] ?? '',
+		'event_type' => $data['event_type'] ?? '',
+		'information' => substr( $data['information'] ?? '', 0, 100 ),
+		'spaces' => $data['spaces'] ?? array(),
+	) ) );
+	
 	$event = spridisi_request_events()[ $data['event_type'] ];
 	if ( 'other' === $data['event_type'] ) {
 		$event .= ': ' . $data['event_other'];
@@ -258,9 +296,18 @@ function spridisi_request_send_mail( $data, $page_id ) {
 		__( 'Datu apstrādes piekrišana: jā.', 'spridisi' ),
 	);
 	$headers = array( 'Content-Type: text/plain; charset=UTF-8', 'Reply-To: ' . $data['email'] );
+	
+	// Log email sending attempt
+	error_log( 'BOOKING: Sending email to: ' . $recipient );
+	error_log( 'BOOKING: Email body lines count: ' . count( $lines ) );
+	
 	if ( ! spridisi_request_mail( $recipient, __( 'Jauns rezervācijas pieprasījums — Sprīdīši', 'spridisi' ), implode( "\n", $lines ), $headers ) ) {
+		error_log( 'BOOKING: Failed to send email to ' . $recipient );
 		return false;
 	}
+	
+	error_log( 'BOOKING: Successfully sent email to ' . $recipient );
+	
 	$acknowledgement = sprintf(
 		__( "Labdien!\n\nPaldies par interesi par Sprīdīšiem. Esam saņēmuši Tavu rezervācijas pieprasījumu.\n\nVēlamie datumi:\n%1\$s–%2\$s\n\nViesu skaits:\n%3\$s\n\nPasākuma veids:\n%4\$s\n\nPārbaudīsim pieejamību un sazināsimies ar Tevi.\n\nSvarīgi: šis e-pasts vēl neapstiprina rezervāciju. Rezervācija būs apstiprināta tikai pēc atsevišķas vienošanās.\n\nSprīdīši\nVecsēlpils, Sēlija", 'spridisi' ),
 		$data['start_date'], $data['end_date'], $data['guests'], $event
