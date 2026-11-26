@@ -37,7 +37,7 @@ function spridisi_section_actions( $section, $light = false ) {
 	$page     = get_page_by_path( $defaults['path'], OBJECT, 'page' );
 	$detail   = spridisi_homepage_link( $section, 'primary', $page && 'publish' === $page->post_status ? get_permalink( $page ) : '#kontakti' );
 	$photo    = spridisi_homepage_link( $section, 'photos', spridisi_gallery_url( $defaults['anchor'] ) );
-	$labels   = array( spridisi_homepage_text( $section, 'primary', $defaults['label'] ), spridisi_homepage_text( $section, 'photos', __( 'Skatīt foto', 'spridisi' ) ) );
+	$labels   = array( spridisi_homepage_text( $section, 'primary', $defaults['label'] ), spridisi_homepage_text( $section, 'photos', __( 'Skatīt vairāk bilžu galerijā', 'spridisi' ) ) );
 	echo '<div class="section-actions">';
 	foreach ( array( $detail, $photo ) as $index => $url ) {
 		if ( ! $url ) {
@@ -156,7 +156,7 @@ function spridisi_gallery_add_homepage_actions( $content ) {
 					$page = get_page_by_path( $settings['path'], OBJECT, 'page' );
 					$url = 'photos' === $field ? spridisi_gallery_url( $settings['anchor'] ) : ( $page && 'publish' === $page->post_status ? get_permalink( $page ) : '#kontakti' );
 					$url = $url && '#' !== $url[0] ? wp_make_link_relative( $url ) : $url;
-					$section['innerBlocks'][] = spridisi_seed_button( $field, 'photos' === $field ? 'Skatīt foto' : $settings['label'], $url );
+					$section['innerBlocks'][] = spridisi_seed_button( $field, 'photos' === $field ? 'Skatīt vairāk bilžu galerijā' : $settings['label'], $url );
 					array_splice( $section['innerContent'], count( $section['innerContent'] ) - 1, 0, array( null ) );
 				}
 			}
