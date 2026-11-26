@@ -266,12 +266,18 @@ function spridisi_request_calculate_estimate( $data ) {
 	$staying = in_array( 'stay', $data['spaces'], true );
 	
 	// Calculate day count
-	$startDate = new DateTime( $data['start_date'] );
-	$endDate = new DateTime( $data['end_date'] );
-	$interval = $startDate->diff( $endDate );
-	$dayCount = (int) $interval->format( '%a' );
+	try {
+		$startDate = new DateTime( $data['start_date'] );
+		$endDate = new DateTime( $data['end_date'] );
+		$interval = $startDate->diff( $endDate );
+		$dayCount = (int) $interval->format( '%a' );
+	} catch ( Exception $e ) {
+		error_log( 'BOOKING: DateTime error: ' . $e->getMessage() . ' start=' . $data['start_date'] . ' end=' . $data['end_date'] );
+		return 0;
+	}
 	
 	if ( $dayCount <= 0 ) {
+		error_log( 'BOOKING: Day count <= 0: ' . $dayCount );
 		return 0;
 	}
 	
@@ -280,9 +286,11 @@ function spridisi_request_calculate_estimate( $data ) {
 	// Hall prices
 	if ( $smallHall ) {
 		$total += $prices['smallHall'] * $dayCount;
+		error_log( 'BOOKING: Small hall added: ' . ( $prices['smallHall'] * $dayCount ) . ' EUR' );
 	}
 	if ( $largeHall ) {
 		$total += $prices['largeHall'] * $dayCount;
+		error_log( 'BOOKING: Large hall added: ' . ( $prices['largeHall'] * $dayCount ) . ' EUR' );
 	}
 	
 	// Overnight prices
@@ -297,15 +305,19 @@ function spridisi_request_calculate_estimate( $data ) {
 			} elseif ( $overnightCount <= 15 ) {
 				$pricePerNight = $prices['overnight']['upTo15'];
 			}
-			$total += $overnightCount * $pricePerNight * $dayCount;
+			$overnightPrice = $overnightCount * $pricePerNight * $dayCount;
+			$total += $overnightPrice;
+			error_log( 'BOOKING: Overnight added: ' . $overnightPrice . ' EUR (guests=' . $overnightCount . ', perNight=' . $pricePerNight . ', days=' . $dayCount . ')' );
 		}
 	}
 	
 	// Sauna price
 	if ( $sauna ) {
 		$total += $prices['sauna'] * $dayCount;
+		error_log( 'BOOKING: Sauna added: ' . ( $prices['sauna'] * $dayCount ) . ' EUR' );
 	}
 	
+	error_log( 'BOOKING: Final estimate total: ' . $total . ' EUR' );
 	return $total;
 }
 
@@ -339,6 +351,13 @@ function spridisi_request_send_mail( $data, $page_id ) {
 	
 	// Calculate estimate
 	$estimate = spridisi_request_calculate_estimate( $data );
+	error_log( 'BOOKING: Estimated price calculation: ' . wp_json_encode( array(
+		'estimate' => $estimate,
+		'spaces' => $data['spaces'] ?? array(),
+		'start_date' => $data['start_date'] ?? '',
+		'end_date' => $data['end_date'] ?? '',
+		'overnight_guests' => $data['overnight_guests'] ?? '',
+	) ) );
 	
 	$lines = array(
 		__( 'Jauns rezervācijas pieprasījums. Rezervācija nav apstiprināta.', 'spridisi' ),
