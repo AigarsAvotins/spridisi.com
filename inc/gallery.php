@@ -39,13 +39,11 @@ function spridisi_section_actions( $section, $light = false ) {
 	$photo    = spridisi_homepage_link( $section, 'photos', spridisi_gallery_url( $defaults['anchor'] ) );
 	$labels   = array( spridisi_homepage_text( $section, 'primary', $defaults['label'] ), spridisi_homepage_text( $section, 'photos', __( 'Skatīt vairāk bilžu galerijā', 'spridisi' ) ) );
 	echo '<div class="section-actions">';
-	foreach ( array( $detail, $photo ) as $index => $url ) {
-		if ( ! $url ) {
-			continue;
-		}
-		$class = 'text-link' . ( $light ? ' text-link--light' : '' ) . ( $index ? ' text-link--secondary' : '' );
-		$accessible_label = $index ? sprintf( __( '%1$s: %2$s', 'spridisi' ), $labels[ $index ], spridisi_section_title( $section, $defaults['label'] ) ) : $labels[ $index ];
-		printf( '<a class="%s" href="%s" aria-label="%s">%s<span aria-hidden="true">→</span></a>', esc_attr( $class ), esc_url( $url ), esc_attr( $accessible_label ), esc_html( $labels[ $index ] ) );
+	// Only show photos link, skip primary detail link
+	if ( $photo ) {
+		$class = 'text-link' . ( $light ? ' text-link--light' : '' );
+		$accessible_label = sprintf( __( '%1$s: %2$s', 'spridisi' ), $labels[1], spridisi_section_title( $section, $defaults['label'] ) );
+		printf( '<a class="%s" href="%s" aria-label="%s">%s<span aria-hidden="true">→</span></a>', esc_attr( $class ), esc_url( $photo ), esc_attr( $accessible_label ), esc_html( $labels[1] ) );
 	}
 	echo '</div>';
 }
