@@ -300,10 +300,9 @@ function spridisi_homepage_starter_content() {
 		spridisi_seed_image( 'venue', 'small-hall-image' ),
 		spridisi_seed_text( 'outdoor-title', 'Āra terase un teritorija', true ),
 		spridisi_seed_text( 'outdoor', '' ),
-		spridisi_seed_button( 'primary', 'Par svinībām', '#kontakti' ),
 		spridisi_seed_image( 'venue' ),
 	) );
-	foreach ( array( 'accommodation' => array( __( 'Accommodation', 'spridisi' ), 'MIERA PIETURA', 'Paliec pa nakti', 'Par nakšņošanu' ), 'sauna' => array( __( 'Sauna', 'spridisi' ), 'LAIKS ATPŪTAI', 'Melnā pirts', 'Par pirti' ) ) as $key => $defaults ) {
+	foreach ( array( 'sauna' => array( __( 'Sauna', 'spridisi' ), 'LAIKS ATPŪTAI', 'Melnā pirts', 'Par pirti' ) ) as $key => $defaults ) {
 		$sections[] = spridisi_seed_group( 'spridisi-content-' . $key, $defaults[0], array(
 			spridisi_seed_text( 'eyebrow', 'sauna' === $key ? spridisi_section_summary( $key, $defaults[1] ) : $defaults[1] ),
 			spridisi_seed_text( 'title', spridisi_section_title( $key, $defaults[2] ), true ),
