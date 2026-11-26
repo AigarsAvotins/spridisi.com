@@ -133,6 +133,8 @@ function spridisi_gallery_assets() {
 }
 add_action( 'wp_enqueue_scripts', 'spridisi_gallery_assets' );
 
+add_filter( 'the_content', 'spridisi_gallery_add_homepage_actions', 20 );
+
 function spridisi_gallery_add_homepage_actions( $content ) {
 	$blocks = parse_blocks( $content );
 	$defaults = spridisi_section_action_defaults();

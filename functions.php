@@ -47,7 +47,7 @@ function spridisi_enqueue_assets() {
 	$script_path    = get_theme_file_path( '/assets/js/main.js' );
 	$style_version  = is_file( $style_path ) ? (string) filemtime( $style_path ) : $theme_version;
 	$script_version = is_file( $script_path ) ? (string) filemtime( $script_path ) : $theme_version;
-	$force_refresh  = '20261126'; // Force cache refresh
+	$force_refresh  = '20261127'; // Force cache refresh
 
 	wp_enqueue_style(
 		'spridisi-main',
