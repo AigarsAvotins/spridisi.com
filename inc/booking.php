@@ -247,6 +247,68 @@ function spridisi_request_rate_allowed() {
 	return true;
 }
 
+function spridisi_request_calculate_estimate( $data ) {
+	$prices = array(
+		'smallHall' => 180,
+		'largeHall' => 350,
+		'overnight' => array(
+			'upTo5' => 15,
+			'upTo10' => 14,
+			'upTo15' => 13,
+			'over15' => 12,
+		),
+		'sauna' => 80,
+	);
+	
+	$smallHall = in_array( 'small_hall', $data['spaces'], true );
+	$largeHall = in_array( 'large_hall', $data['spaces'], true );
+	$sauna = in_array( 'sauna', $data['spaces'], true );
+	$staying = in_array( 'stay', $data['spaces'], true );
+	
+	// Calculate day count
+	$startDate = new DateTime( $data['start_date'] );
+	$endDate = new DateTime( $data['end_date'] );
+	$interval = $startDate->diff( $endDate );
+	$dayCount = (int) $interval->format( '%a' );
+	
+	if ( $dayCount <= 0 ) {
+		return 0;
+	}
+	
+	$total = 0;
+	
+	// Hall prices
+	if ( $smallHall ) {
+		$total += $prices['smallHall'] * $dayCount;
+	}
+	if ( $largeHall ) {
+		$total += $prices['largeHall'] * $dayCount;
+	}
+	
+	// Overnight prices
+	if ( $staying && '' !== $data['overnight_guests'] ) {
+		$overnightCount = (int) $data['overnight_guests'];
+		if ( $overnightCount > 0 ) {
+			$pricePerNight = $prices['overnight']['over15'];
+			if ( $overnightCount <= 5 ) {
+				$pricePerNight = $prices['overnight']['upTo5'];
+			} elseif ( $overnightCount <= 10 ) {
+				$pricePerNight = $prices['overnight']['upTo10'];
+			} elseif ( $overnightCount <= 15 ) {
+				$pricePerNight = $prices['overnight']['upTo15'];
+			}
+			$total += $overnightCount * $pricePerNight * $dayCount;
+		}
+	}
+	
+	// Sauna price
+	if ( $sauna ) {
+		$total += $prices['sauna'] * $dayCount;
+	}
+	
+	return $total;
+}
+
 function spridisi_request_send_mail( $data, $page_id ) {
 	$recipient = sanitize_email( 'info@spridisi.com' );
 	if ( ! is_email( $recipient ) ) {
@@ -274,6 +336,10 @@ function spridisi_request_send_mail( $data, $page_id ) {
 	}
 	$spaces = array_map( static function ( $key ) { return spridisi_request_spaces()[ $key ]; }, $data['spaces'] );
 	$contact = spridisi_request_contacts()[ $data['contact_method'] ] ?? __( 'Nav nozīmes', 'spridisi' );
+	
+	// Calculate estimate
+	$estimate = spridisi_request_calculate_estimate( $data );
+	
 	$lines = array(
 		__( 'Jauns rezervācijas pieprasījums. Rezervācija nav apstiprināta.', 'spridisi' ),
 		'',
@@ -284,17 +350,36 @@ function spridisi_request_send_mail( $data, $page_id ) {
 		__( 'Ierašanās vai pasākuma sākuma datums:', 'spridisi' ) . ' ' . $data['start_date'],
 		__( 'Izbraukšanas vai pasākuma beigu datums:', 'spridisi' ) . ' ' . $data['end_date'],
 		__( 'Plānotais viesu skaits:', 'spridisi' ) . ' ' . $data['guests'],
-		__( 'Nakšņotāju skaits:', 'spridisi' ) . ' ' . ( '' === $data['overnight_guests'] ? '0' : $data['overnight_guests'] ),
-		__( 'Pasākuma veids:', 'spridisi' ) . ' ' . $event,
-		__( 'Vēlamā telpa vai piedāvājums:', 'spridisi' ) . ' ' . implode( ', ', $spaces ),
-		__( 'Kā visērtāk ar Tevi sazināties?', 'spridisi' ) . ' ' . $contact,
-		__( 'Papildu informācija:', 'spridisi' ),
-		$data['information'],
-		'',
-		__( 'Lapa:', 'spridisi' ) . ' ' . get_permalink( $page_id ),
-		__( 'Valoda:', 'spridisi' ) . ' ' . get_locale(),
-		__( 'Datu apstrādes piekrišana: jā.', 'spridisi' ),
 	);
+	
+	// Add overnight guests only if staying and value is not empty
+	if ( in_array( 'stay', $data['spaces'], true ) && '' !== $data['overnight_guests'] ) {
+		$lines[] = __( 'Nakšņotāju skaits:', 'spridisi' ) . ' ' . $data['overnight_guests'];
+	}
+	
+	$lines[] = __( 'Pasākuma veids:', 'spridisi' ) . ' ' . $event;
+	$lines[] = __( 'Vēlamā telpa vai piedāvājums:', 'spridisi' ) . ' ' . implode( ', ', $spaces );
+	$lines[] = __( 'Kā visērtāk ar Tevi sazināties?', 'spridisi' ) . ' ' . $contact;
+	
+	// Add estimate if calculated
+	if ( $estimate > 0 ) {
+		$lines[] = '';
+		$lines[] = __( 'Aptuvenā summa:', 'spridisi' ) . ' ' . number_format( $estimate, 2, ',', ' ' ) . ' EUR';
+		$lines[] = __( '(Summa ir aptuvena un tiks precizēta pēc rezervācijas apstiprināšanas)', 'spridisi' );
+	}
+	
+	// Add additional info only if not empty
+	if ( '' !== trim( $data['information'] ) ) {
+		$lines[] = '';
+		$lines[] = __( 'Papildu informācija:', 'spridisi' );
+		$lines[] = $data['information'];
+	}
+	
+	$lines[] = '';
+	$lines[] = __( 'Lapa:', 'spridisi' ) . ' ' . get_permalink( $page_id );
+	$lines[] = __( 'Valoda:', 'spridisi' ) . ' ' . get_locale();
+	$lines[] = __( 'Datu apstrādes piekrišana: jā.', 'spridisi' );
+	
 	$headers = array( 'Content-Type: text/plain; charset=UTF-8', 'Reply-To: ' . $data['email'] );
 	
 	// Log email sending attempt
